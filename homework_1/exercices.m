@@ -132,4 +132,4 @@ function btn_down (obj, evt)
     title(gca, sprintf ("(%i, %i) = %i", x, y, img_v));
   endif
 endfunction
-# set (gcf, 'WindowButtonDownFcn', @btn_down);
+# set (gcf, 'WindowButtonDownFcn', @btn_down); 
