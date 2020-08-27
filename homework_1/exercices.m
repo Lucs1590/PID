@@ -103,3 +103,33 @@ F = [ -0.5 -0.5 -0.2 0.2 0.9 1.2 1.5 ;
 -0.5 0.5 0.2 0.2 0.9 1.2 1.5;
 -0.5 0.45 0.2 0.2 0.9 1.2 1.5;
 -0.5 -0.5 0.42 0.2 0.49 1.2 1.5];
+im2uint8(F);
+mat2gray(F);
+im2bw(F, 0.3);
+
+# T_9
+f = imread('Figuras1/chestxray_gray.jpg');
+size(f)
+[M,N] = size(f);
+whos f;
+imshow(f);
+g = imread('Figuras1/rose_gray.tif');
+imshow(f), figure, imshow(g)
+# At Octave we don't have pixval function, so a alternative is:
+function btn_down (obj, evt)
+  cp = get (gca, 'CurrentPoint');
+  x = round (cp(1, 1));
+  y = round (cp(1, 2));
+  img = get (findobj (gca, "type", "image"), "cdata");
+  img_v = NA;
+  if (x > 0 && y > 0 && x <= columns (img) && y <= rows (img))
+    img_v = squeeze (img(y, x, :));
+  endif
+
+  if (numel (img_v) == 3) # rgb image
+    title(gca, sprintf ("(%i, %i) = %i, %i, %i", x, y, img_v(1), img_v(2), img_v(3)));
+  elseif (numel (img_v) == 1) # gray image
+    title(gca, sprintf ("(%i, %i) = %i", x, y, img_v));
+  endif
+endfunction
+# set (gcf, 'WindowButtonDownFcn', @btn_down);
