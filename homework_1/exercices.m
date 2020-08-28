@@ -150,3 +150,16 @@ compress_ratio_i = image_bytes_i/KI.FileSize;
 # E_5
 f = imread('Figuras1/circuit.jpg');
 imfinfo Figuras1/circuit.jpg
+
+# T_10
+f = imread('Figuras1/rose_gray.tif');
+imshow(f)
+whos f
+
+fp = f(end:-1:1,:);
+fl = f(:,end:-1:1);
+imshow(f), figure, imshow(fp), figure, imshow(fl)
+fc = f(65:198, 65:198);
+fs = f(1:2:end, 1:2:end);
+imshow(f), figure, imshow(fc), figure, imshow(fs)
+plot(f(132,:))
