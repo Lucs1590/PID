@@ -135,7 +135,7 @@ endfunction
 # set (gcf, 'WindowButtonDownFcn', @btn_down);
 
 # E_4
-h = imread('bubbles.jpg');
+h = imread('Figuras1/bubbles.jpg');
 i = imread('bubbles5.jpg');
 imshow(h), figure, imshow(i)
 
@@ -146,3 +146,7 @@ compress_ratio_h = image_bytes_h/KH.FileSize;
 KI = imfinfo('bubbles5.jpg')
 image_bytes_i = KI.Width*KI.Height*KI.BitDepth/8;
 compress_ratio_i = image_bytes_i/KI.FileSize;
+
+# E_5
+f = imread('Figuras1/circuit.jpg');
+imfinfo Figuras1/circuit.jpg
