@@ -132,4 +132,17 @@ function btn_down (obj, evt)
     title(gca, sprintf ("(%i, %i) = %i", x, y, img_v));
   endif
 endfunction
-# set (gcf, 'WindowButtonDownFcn', @btn_down); 
+# set (gcf, 'WindowButtonDownFcn', @btn_down);
+
+# E_4
+h = imread('bubbles.jpg');
+i = imread('bubbles5.jpg');
+imshow(h), figure, imshow(i)
+
+KH = imfinfo('Figuras1/bubbles.jpg')
+image_bytes_h = KH.Width*KH.Height*KH.BitDepth/8;
+compress_ratio_h = image_bytes_h/KH.FileSize;
+
+KI = imfinfo('bubbles5.jpg')
+image_bytes_i = KI.Width*KI.Height*KI.BitDepth/8;
+compress_ratio_i = image_bytes_i/KI.FileSize;
