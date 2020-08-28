@@ -163,3 +163,14 @@ fc = f(65:198, 65:198);
 fs = f(1:2:end, 1:2:end);
 imshow(f), figure, imshow(fc), figure, imshow(fs)
 plot(f(132,:))
+
+# T_11
+Z = zeros(5,5)
+whos Z
+U = ones(3,3)
+whos U
+M = magic(4)
+whos M
+sum(M(:,1)), sum(M(3,:))
+R1 = rand(4,4)
+R2 = randn(4,4)
