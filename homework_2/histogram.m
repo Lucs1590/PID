@@ -1,6 +1,4 @@
 clear all
-# https://octave.sourceforge.io/image/function/imhist.html
-# https://octave.sourceforge.io/image/function/histeq.html
 # https://octave.org/doc/v4.4.1/Basic-Statistical-Functions.html
 # https://octave.org/doc/v4.0.1/Defining-Functions.html#Defining-Functions
 
@@ -16,7 +14,12 @@ clear all
 # 3) Repita 1), porém utilizando a função MyHistoEq
 # 4) Compare os resultados
 
+# EXERCICIO 1
 image = imread('lena.jpg');
 image = mat2gray(image);
-figure(1)
-imshow(image)
+raw_hist = imhist(image);
+# figure(1)
+# imshow(image)
+
+eq_image = histeq(image);
+eq_hist = imhist(eq_image);
