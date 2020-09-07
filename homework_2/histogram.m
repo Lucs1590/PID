@@ -1,6 +1,5 @@
 clear all
-# https://octave.org/doc/v4.4.1/Basic-Statistical-Functions.html
-# https://octave.org/doc/v4.0.1/Defining-Functions.html#Defining-Functions
+# https://octave.org/doc/v4.2.0/Multiple-Plots-on-One-Page.html
 
 # 1) Faça um programa em Matlab, Octave ou Python que lê uma imagem, aplica a 
 # transformação de equalização de histograma disponibilizado em bibliotecas de
@@ -16,10 +15,49 @@ clear all
 
 # EXERCICIO 1
 image = imread('lena.jpg');
-image = mat2gray(image);
+# image = mat2gray(image);
 raw_hist = imhist(image);
 # figure(1)
 # imshow(image)
 
 eq_image = histeq(image);
 eq_hist = imhist(eq_image);
+
+# figure(2)
+# imshow(eq_image)
+
+# EXERCICIO 2
+function my_image = MyHistoEq(img)
+  [h w] = size(img);
+  flat_image = img(:);
+  aux = zeros(256,1);
+  
+  # making a histogram
+  for i = 1:256
+    aux(i,1) = sum(flat_image == i) / size(flat_image)(1);
+  endfor;
+
+  # equalizing histogram
+  bef = 0;
+  for i = 1:256
+    aux(i,1) = aux(i,1) + bef;
+    bef = aux(i,1);
+  endfor;
+  
+  for i = 1:256
+    aux(i,1) = round(256 * aux(i,1));
+  endfor;
+  
+  # equalizing image
+  for j = 1:h
+    for k = 1:w
+      img(j,k) = aux(img(j,k),1);
+    endfor;
+  endfor;
+  # return equalized image
+  my_image = img;
+endfunction
+
+my_eq_image = MyHistoEq(image)
+# figure(3)
+# imshow(eq_image)
