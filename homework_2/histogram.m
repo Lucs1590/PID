@@ -1,5 +1,5 @@
 clear all
-# https://octave.org/doc/v4.2.0/Multiple-Plots-on-One-Page.html
+close all
 
 # 1) Faça um programa em Matlab, Octave ou Python que lê uma imagem, aplica a 
 # transformação de equalização de histograma disponibilizado em bibliotecas de
@@ -15,19 +15,31 @@ clear all
 
 # EXERCICIO 1
 image = imread('lena.jpg');
-# image = mat2gray(image);
 raw_hist = imhist(image);
-# figure(1)
-# imshow(image)
+
+figure(1)
+subplot(2,2,1)
+imshow(image)
+axis('image')
+title('Raw image')
+
+subplot(2,2,3)
+plot(raw_hist)
+title('Raw histogram')
 
 eq_image = histeq(image);
 eq_hist = imhist(eq_image);
 
-# figure(2)
-# imshow(eq_image)
+subplot(2,2,2)
+imshow(eq_image)
+title('Eq. image (Octave)')
+
+subplot(2,2,4)
+plot(eq_hist)
+title('Eq. histogram (Octave)')
 
 # EXERCICIO 2
-function my_image = MyHistoEq(img)
+function [my_image, my_histogram] = MyHistoEq(img)
   [h w] = size(img);
   flat_image = img(:);
   aux = zeros(256,1);
@@ -54,10 +66,35 @@ function my_image = MyHistoEq(img)
       img(j,k) = aux(img(j,k),1);
     endfor;
   endfor;
+
   # return equalized image
   my_image = img;
+  
+  # making a new histogram
+  flat_image = my_image(:);
+  for i = 1:256
+    aux(i,1) = sum(flat_image == i);
+  endfor;
+  my_histogram = aux;
 endfunction
 
-my_eq_image = MyHistoEq(image)
-# figure(3)
-# imshow(eq_image)
+# EXERCICIO 3
+figure(2)
+subplot(2,2,1)
+imshow(image)
+axis('image')
+title('Raw image')
+
+subplot(2,2,3)
+plot(raw_hist)
+title('Raw histogram')
+
+[my_eq_image, my_eq_histo] = MyHistoEq(image);
+
+subplot(2,2,2)
+imshow(my_eq_image)
+title('Eq. image (Of authorship)')
+
+subplot(2,2,4)
+plot(my_eq_histo)
+title('Eq. histogram (Of authorship)')
