@@ -5,7 +5,7 @@ close(gcf)
 
 prompt = {'Enter the image name'};
 dlgtitle = 'File Name';
-definput = {'cameraman.tif'};
+definput = {'pirate.png'};
 %opts.Interpreter = 'tex';
 image_name = inputdlg(prompt,dlgtitle,[1 50],definput);
 
@@ -20,8 +20,7 @@ img = imread(image_name{1}) ;
 prompt = {'Enter a value of noise probability (in %)'};
 dlgtitle = 'Probability Value';
 definput = {'10'};
-opts.Interpreter = 'tex';
-prob = inputdlg(prompt,dlgtitle,[1 50],definput,opts);
+prob = inputdlg(prompt,dlgtitle,[1 50],definput);
 
 p = str2double(prob)/100;
 
@@ -83,12 +82,3 @@ title('Imagem Restaurada - My Mean')
 K = medfilt2(img_noise);
 subplot(2,3,4); imshow(K)
 title('Imagem Restaurada - Median (medfilt2)')
-
-localMean = imboxfilt(img_noise,3);
-subplot(2,3,6); imshow(localMean)
-title('Imagem Restaurada - Mean imboxfilt')
-
-
-
-        
-       
