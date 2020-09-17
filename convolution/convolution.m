@@ -4,20 +4,21 @@ raw_img = imread('pirate.png');
 raw_img = im2double(raw_img);
 
 [h w] = size(raw_img);
-kernel = [
+dot_kernel = [
 -1 -1 -1;
 -1 8 -1;
 -1 -1 -1
 ];
-modified_img = raw_img;
+
+dot_image = raw_img;
 
 for i = 2 : h-1
   for j = 2 : w-1
     aux = raw_img(i-1:i+1, j-1:j+1) ;
     # at the folowing operation we use dot "." to multiply element-by-element.
-    aux = abs(sum((aux .* kernel)(:))/size(kernel)(1)^2);
+    aux = abs(sum((aux .* dot_kernel)(:))/size(dot_kernel)(1)^2);
     # we can make a threshold to set aux with an condition.
-    modified_img(i,j) = aux;
+    dot_image(i,j) = aux;
   endfor
 endfor
 
@@ -28,5 +29,5 @@ axis('image')
 title('Raw image')
 
 subplot(1,2,2)
-imshow(modified_img)
-title('Modified image')
+imshow(dot_image)
+title('Central Dot Kernel')
