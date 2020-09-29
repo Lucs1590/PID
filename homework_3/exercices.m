@@ -51,3 +51,16 @@ xlabel("Px. value");
 ylabel("Count");
 text(32,8800,"Highest value")
 axis([0 300 0 10001])
+
+# E_3
+figure(5)
+g1 = imadjust(img, [0 1], [1 0]); # inversa
+imshow(g1)
+
+figure(6)
+g2 = imadjust(img, [0.5 0.75], [0 1]); # do 0 ao 0.5, recebe zero, do 0.5 ao 0.75 está entre 0 e 1, e acima de 0.75 recebe 1
+imgshow(g2)
+
+figure(7)
+g3 = imadjust(img, [ ], [ ], 2); # If gamma is greater than 1, then imadjust weights the mapping toward lower (darker) output values.
+imshow(g3)
