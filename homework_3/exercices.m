@@ -81,3 +81,24 @@ imshow(img2_eq)
 figure(11)
 imhist(img2_eq)
 ylim('auto')
+
+# E_5
+figure(12)
+imshow(img2)
+
+figure(13)
+imhist(img2)
+ylim('auto')
+
+hnorm = imhist(img2)./numel(img2);
+cdf = cumsum(hnorm);
+x = linspace(0, 1, 256);
+figure(14)
+plot(x,cdf)
+axis([0 1 0 1])
+
+set(gca, 'xtick', 0:.2:1)
+set(gca, 'ytick', 0:.2:1)
+xlabel('Valores de Intensidade de Entrada', 'fontsize', 9)
+ylabel('Valores de Intensidade de Saída', 'fontsize', 9)
+text(0.18, 0.5, 'Função de Transfomação', 'fontsize', 9)
