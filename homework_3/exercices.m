@@ -65,10 +65,11 @@ figure(7)
 g3 = imadjust(img, [ ], [ ], 2); # If gamma is greater than 1, then imadjust weights the mapping toward lower (darker) output values.
 imshow(g3)
 
-# T_2
+# T_2 e E_4
 img2 = imread('Figuras2/polem.bmp');
 figure(8)
 imshow(img2)
+
 figure(9)
 imhist(img2)
 ylim('auto')
