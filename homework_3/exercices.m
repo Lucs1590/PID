@@ -59,8 +59,24 @@ imshow(g1)
 
 figure(6)
 g2 = imadjust(img, [0.5 0.75], [0 1]); # do 0 ao 0.5, recebe zero, do 0.5 ao 0.75 está entre 0 e 1, e acima de 0.75 recebe 1
-imgshow(g2)
+imshow(g2)
 
 figure(7)
 g3 = imadjust(img, [ ], [ ], 2); # If gamma is greater than 1, then imadjust weights the mapping toward lower (darker) output values.
 imshow(g3)
+
+# T_2
+img2 = imread('Figuras2/polem.bmp');
+figure(8)
+imshow(img2)
+figure(9)
+imhist(img2)
+ylim('auto')
+
+img2_eq = histeq(img2,256);
+figure(10)
+imshow(img2_eq)
+
+figure(11)
+imhist(img2_eq)
+ylim('auto')
