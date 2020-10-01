@@ -20,3 +20,16 @@ img6 = img1 - img2;
 figure('Name', 'Subtração A e B Comum'),imshow(img6)
 
 # E_7
+img_polem = imread('Figuras2/polem.bmp');
+figure('Name', 'Imagem Original')
+imshow(img_polem)
+img_polem_clara = img_polem + 128;
+figure('Name', 'Imagem clareada')
+imshow(img_polem_clara)
+
+img_p_eq = histeq(img_polem,128);
+img_pc_eq = histeq(img_polem_clara,128);
+figure('Name', 'Histograma da Imagem Original')
+imhist(img_p_eq)
+figure('Name', 'Histograma da Imagem Clara')
+imhist(img_pc_eq)
