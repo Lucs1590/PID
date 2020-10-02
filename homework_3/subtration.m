@@ -52,3 +52,39 @@ figure('Name', 'Imagem Original Equalizada')
 imshow(img_p_eq)
 figure('Name', 'Imagem Clara Equalizada')
 imshow(img_p_eq)
+
+# E_8
+raw_img = imread('Figuras2/ferramentas.bmp');
+img_bin_1 = im2bw(raw_img,0.2);
+img_bin_2 = im2bw(raw_img,0.3);
+img_bin_3 = im2bw(raw_img,0.4);
+img_bin_4 = im2bw(raw_img,0.5);
+img_bin_5 = im2bw(raw_img,0.6);
+figure('Name', 'Imagem Bin 20%')
+imshow(img_bin_1)
+figure('Name', 'Imagem Bin 30%')
+imshow(img_bin_2)
+figure('Name', 'Imagem Bin 40%')
+imshow(img_bin_3)
+figure('Name', 'Imagem Bin 50%')
+imshow(img_bin_4)
+figure('Name', 'Imagem Bin 60%')
+imshow(img_bin_5)
+
+figure('Name', 'Histograma do Bin 20%')
+imhist(img_bin_1)
+figure('Name', 'Histograma Bin 30%')
+imhist(img_bin_2)
+figure('Name', 'Histograma Bin 40%')
+imhist(img_bin_3)
+figure('Name', 'Histograma Bin 50%')
+imhist(img_bin_4)
+figure('Name', 'Histograma Bin 60%')
+imhist(img_bin_5)
+
+raw_img = imread('Figuras2/polem.bmp');
+img_bin_6 = graythresh(raw_img)
+figure('Name', 'Imagem com Graythresh')
+imshow(img_bin_6)
+figure('Name', 'Histograma Graythresh')
+imhist(img_bin_6)
