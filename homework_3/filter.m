@@ -96,3 +96,76 @@ img_kernel = raw_img - imfilter(raw_img, w8, 'replicate');
 figure, imshow(raw_img)
 figure, imshow(img_lapacian)
 figure, imshow(img_kernel)
+
+# E_10
+img_6 = imread('Figuras2/ferramentas.bmp');
+img_7 = imread('Figuras2/Lena_ruido.bmp');
+img_8 = imread('Figuras2/Moon.tif');
+img_9 = imread('Figuras2/teste.bmp');
+
+sobel_v = fspecial('sobel');
+sobel_h = fspecial('sobel')';
+sobel_c = sqrt(sobel_v.^2 + sobel_h.^2)
+
+img_result = img_6 - imfilter(img_6, sobel_v, 'replicate');
+figure, imshow(img_result)
+img_result = img_6 - imfilter(img_6, sobel_h, 'replicate');
+figure, imshow(img_result)
+img_result = img_6 - imfilter(img_6, sobel_c, 'replicate');
+figure, imshow(img_result)
+
+img_result = img_7 - imfilter(img_7, sobel_v, 'replicate');
+figure, imshow(img_result)
+img_result = img_7 - imfilter(img_7, sobel_h, 'replicate');
+figure, imshow(img_result)
+img_result = img_7 - imfilter(img_7, sobel_c, 'replicate');
+figure, imshow(img_result)
+
+img_result = img_8 - imfilter(img_8, sobel_v, 'replicate');
+figure, imshow(img_result)
+img_result = img_8 - imfilter(img_8, sobel_h, 'replicate');
+figure, imshow(img_result)
+img_result = img_8 - imfilter(img_8, sobel_c, 'replicate');
+figure, imshow(img_result)
+
+img_result = img_9 - imfilter(img_9, sobel_v, 'replicate');
+figure, imshow(img_result)
+img_result = img_9 - imfilter(img_9, sobel_h, 'replicate');
+figure, imshow(img_result)
+img_result = img_9 - imfilter(img_9, sobel_c, 'replicate');
+figure, imshow(img_result)
+
+prewitt_v = fspecial('prewitt');
+prewitt_h = fspecial('prewitt')';
+prewitt_c = sqrt(prewitt_v.^2 + prewitt_h.^2)
+
+img_result = img_6 - imfilter(img_6, prewitt_v, 'replicate');
+figure, imshow(img_result)
+img_result = img_6 - imfilter(img_6, prewitt_h, 'replicate');
+figure, imshow(img_result)
+img_result = img_6 - imfilter(img_6, prewitt_c, 'replicate');
+figure, imshow(img_result)
+
+img_result = img_7 - imfilter(img_7, prewitt_v, 'replicate');
+figure, imshow(img_result)
+img_result = img_7 - imfilter(img_7, prewitt_h, 'replicate');
+figure, imshow(img_result)
+img_result = img_7 - imfilter(img_7, prewitt_c, 'replicate');
+figure, imshow(img_result)
+
+img_result = img_8 - imfilter(img_8, prewitt_v, 'replicate');
+figure, imshow(img_result)
+img_result = img_8 - imfilter(img_8, prewitt_h, 'replicate');
+figure, imshow(img_result)
+img_result = img_8 - imfilter(img_8, prewitt_c, 'replicate');
+figure, imshow(img_result)
+
+img_result = img_9 - imfilter(img_9, prewitt_v, 'replicate');
+figure, imshow(img_result)
+img_result = img_9 - imfilter(img_9, prewitt_h, 'replicate');
+figure, imshow(img_result)
+img_result = img_9 - imfilter(img_9, prewitt_c, 'replicate');
+figure, imshow(img_result)
+
+# T_5
+
