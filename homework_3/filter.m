@@ -81,3 +81,18 @@ endfor
 
 figure('Name', 'Media da vizinhança k=20')
 imshow(k_img)
+
+# T_4
+raw_img = imread('Figuras2/Moon.tif');
+w4 = fspecial('laplacian',0);
+w8 = [
+1 1 1;
+1 -8 1;
+1 1 1
+];
+raw_img = im2double(raw_img);
+img_lapacian = raw_img - imfilter(raw_img, w4, 'replicate');
+img_kernel = raw_img - imfilter(raw_img, w8, 'replicate');
+figure, imshow(raw_img)
+figure, imshow(img_lapacian)
+figure, imshow(img_kernel)
