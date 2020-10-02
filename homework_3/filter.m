@@ -168,4 +168,101 @@ img_result = img_9 - imfilter(img_9, prewitt_c, 'replicate');
 figure, imshow(img_result)
 
 # T_5
+k = imread('Figuras2/ferramentas.bmp');
+f = im2double(k);
+f1 = imnoise(f,'salt & pepper', 0.6);
+f2 = imnoise(f,'salt & pepper', 0.6);
+f3 = imnoise(f,'salt & pepper', 0.6);
+f4 = imnoise(f,'salt & pepper', 0.6);
+f5 = imnoise(f,'salt & pepper', 0.6);
+f6 = imnoise(f,'salt & pepper', 0.6);
+f7 = imnoise(f,'salt & pepper', 0.6);
+f8 = imnoise(f,'salt & pepper', 0.6);
+f9 = imnoise(f,'salt & pepper', 0.6);
+f10 = imnoise(f,'salt & pepper', 0.6);
 
+fm = (f1 + f2 + f3 + f4 + f5 + f6 + f7 + f8 + f9 + f10)/10;
+
+figure
+subplot(2,3,1);imshow(f)
+subplot(2,3,2);imshow(f1)
+subplot(2,3,3);imshow(f2)
+subplot(2,3,4);imshow(f3)
+subplot(2,3,5);imshow(f4)
+subplot(2,3,6);imshow(f5)
+
+figure
+subplot(2,3,1);imshow(f6)
+subplot(2,3,2);imshow(f7)
+subplot(2,3,3);imshow(f8)
+subplot(2,3,4);imshow(f9)
+subplot(2,3,5);imshow(f10)
+subplot(2,3,6);imshow(fm)
+
+# E_11
+k = imread('Figuras2/ferramentas.bmp');
+f = im2double(k);
+f1 = imnoise(f,'salt & pepper', 0.9);
+f2 = imnoise(f,'salt & pepper', 0.8);
+f3 = imnoise(f,'salt & pepper', 0.7);
+f4 = imnoise(f,'salt & pepper', 0.6);
+f5 = imnoise(f,'salt & pepper', 0.5);
+f6 = imnoise(f,'salt & pepper', 0.4);
+f7 = imnoise(f,'salt & pepper', 0.3);
+f8 = imnoise(f,'salt & pepper', 0.2);
+f9 = imnoise(f,'salt & pepper', 0.1);
+f10 = imnoise(f,'salt & pepper', 0.5);
+
+fm = (f1 + f2 + f3 + f4 + f5 + f6 + f7 + f8 + f9 + f10)/10;
+
+figure
+subplot(2,3,1);imshow(f)
+subplot(2,3,2);imshow(f1)
+subplot(2,3,3);imshow(f2)
+subplot(2,3,4);imshow(f3)
+subplot(2,3,5);imshow(f4)
+subplot(2,3,6);imshow(f5)
+
+figure
+subplot(2,3,1);imshow(f6)
+subplot(2,3,2);imshow(f7)
+subplot(2,3,3);imshow(f8)
+subplot(2,3,4);imshow(f9)
+subplot(2,3,5);imshow(f10)
+subplot(2,3,6);imshow(fm)
+
+k = imread('Figuras2/ferramentas.bmp');
+f = im2double(k);
+f1 = imnoise(f,'gaussian', 0.9);
+f2 = imnoise(f,'gaussian', 0.8);
+f3 = imnoise(f,'gaussian', 0.7);
+f4 = imnoise(f,'gaussian', 0.6);
+f5 = imnoise(f,'gaussian', 0.5);
+f6 = imnoise(f,'gaussian', 0.4);
+f7 = imnoise(f,'gaussian', 0.3);
+f8 = imnoise(f,'gaussian', 0.2);
+f9 = imnoise(f,'gaussian', 0.1);
+f10 = imnoise(f,'gaussian', 0.5);
+
+fm = (f1 + f2 + f3 + f4 + f5 + f6 + f7 + f8 + f9 + f10)/10;
+
+figure
+subplot(2,3,1);imshow(f)
+subplot(2,3,2);imshow(f1)
+subplot(2,3,3);imshow(f2)
+subplot(2,3,4);imshow(f3)
+subplot(2,3,5);imshow(f4)
+subplot(2,3,6);imshow(f5)
+
+figure
+subplot(2,3,1);imshow(f6)
+subplot(2,3,2);imshow(f7)
+subplot(2,3,3);imshow(f8)
+subplot(2,3,4);imshow(f9)
+subplot(2,3,5);imshow(f10)
+subplot(2,3,6);imshow(fm)
+
+hist(fm)
+fm = histeq(fm);
+figure
+imshow(fm)
