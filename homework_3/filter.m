@@ -26,3 +26,58 @@ imshow(img_med_5)
 figure('Name', 'Mediana 7x7')
 imshow(img_med_7)
 
+
+function near = getNear(list_near, k)
+  i = 1;
+  near = [];
+  while (size(near)(2) < k)
+    idx = nthargout (2, @min, abs (list_near-25)(:));
+    [r, c] = ind2sub (size (list_near), idx);
+    near(i) = list_near(r,c);
+    list_near(r,c) = list_near(r,c) + 256;
+    i++;
+  endwhile
+endfunction;
+
+k_img = raw_img;
+k = 9;
+[h w] = size(raw_img);
+
+for i = 3 : h-2
+  for j = 3 : w-2
+    aux = raw_img(i-2:i+2, j-2:j+2) ;
+    aux = getNear(aux, k);
+    k_img(i,j) =  sum(sum(aux))/k;
+  endfor
+endfor
+
+figure('Name', 'Media da vizinhança k=9')
+imshow(k_img)
+
+k_img = raw_img;
+k = 15;
+
+for i = 3 : h-2
+  for j = 3 : w-2
+    aux = raw_img(i-2:i+2, j-2:j+2) ;
+    aux = getNear(aux, k);
+    k_img(i,j) =  sum(sum(aux))/k ;
+  endfor
+endfor
+
+figure('Name', 'Media da vizinhança k=15')
+imshow(k_img)
+
+k_img = raw_img;
+k = 20;
+
+for i = 3 : h-2
+  for j = 3 : w-2
+    aux = raw_img(i-2:i+2, j-2:j+2) ;
+    aux = getNear(aux, k);
+    k_img(i,j) =  sum(sum(aux))/k ;
+  endfor
+endfor
+
+figure('Name', 'Media da vizinhança k=20')
+imshow(k_img)
