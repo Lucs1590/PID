@@ -1,4 +1,5 @@
 import cv2
+import matplotlib.pyplot as plt
 
 
 def run_pipeline():
@@ -6,8 +7,10 @@ def run_pipeline():
     ## Run Pipeline
     This function is the spine of project, so here all the functions are runned.
     """
-    raw_img = read_img('')
+    raw_img = read_img('phone_0.png')
     gray_img = change_img_color(raw_img, cv2.COLOR_BGR2GRAY)
+    plt.imshow(raw_img)
+    plt.show()
 
 
 def read_img(path):
