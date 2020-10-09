@@ -8,7 +8,7 @@ def run_pipeline():
     # Run Pipeline
     This function is the spine of project, so here all the functions are runned.
     """
-    raw_img = read_img('phone_0.png')
+    raw_img = read_img('img/phone_0.png')
     gray_img = change_img_color(raw_img, cv2.COLOR_BGR2GRAY)
     edge_img = apply_filter(gray_img, 'sobel')
     # find centroids
