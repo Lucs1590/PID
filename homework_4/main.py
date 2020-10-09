@@ -45,7 +45,7 @@ def apply_filter(img, name=''):
         v_kernel = np.array([[-1, -2, -1], [0, 0, 0], [-1, -2, -1]])
         v_filtered_image = make_convolution(img, v_kernel)
 
-        aux_img = np.sum(h_filtered_image, v_filtered_image)
+        aux_img = h_filtered_image + v_filtered_image
     elif name == 'prewitt':
         h_kernel = np.array([[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]])
         h_filtered_image = make_convolution(img, h_kernel)
@@ -53,7 +53,7 @@ def apply_filter(img, name=''):
         v_kernel = np.array([[-1, -1, -1], [0, 0, 0], [1, 1, 1]])
         v_filtered_image = make_convolution(img, v_kernel)
 
-        aux_img = np.sum(h_filtered_image, v_filtered_image)
+        aux_img = h_filtered_image + v_filtered_image
     else:
         h_kernel = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
         h_filtered_image = make_convolution(img, h_kernel)
@@ -61,7 +61,7 @@ def apply_filter(img, name=''):
         v_kernel = np.array([[-1, -2, -1], [0, 0, 0], [-1, -2, -1]])
         v_filtered_image = make_convolution(img, v_kernel)
 
-        aux_img = np.sum(h_filtered_image, v_filtered_image)
+        aux_img = h_filtered_image + v_filtered_image
 
     return aux_img
 
@@ -71,10 +71,11 @@ def make_convolution(img, kernel):
     # Make Convolution
     https://en.wikipedia.org/wiki/Convolution
     """
-    aux = np.zeros_like(img)
-    for i in range(1, img.shape[0]-2):
-        for j in range(1, img.shape[1]-2):
-            aux = np.dot(img[i-1:i+2, j-1:j+2], kernel)
+    aux = img.copy()
+
+    for i in range(1, img.shape[0]-1):
+        for j in range(1, img.shape[1]-1):
+            aux[i][j] = np.sum(img[i-1:i+2, j-1:j+2] * kernel)
     return aux
 
 
