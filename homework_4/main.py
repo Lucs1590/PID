@@ -11,7 +11,7 @@ def run_pipeline():
     raw_img = read_img('phone_0.png')
     gray_img = change_img_color(raw_img, cv2.COLOR_BGR2GRAY)
     edge_img = apply_filter(gray_img, 'sobel')
-    show_img(edge_img, 'cv')
+    # show_img(edge_img, 'cv')
 
 
 def read_img(path):
@@ -35,7 +35,7 @@ def apply_filter(img, name=''):
     # Apply Filter
     Select a filter to make convolution process.
 
-    By default we use roberts filter.
+    By default we use prewitt filter.
     """
     if name == 'sobel':
         h_kernel = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
@@ -45,19 +45,11 @@ def apply_filter(img, name=''):
         v_filtered_image = make_convolution(img, v_kernel)
 
         aux_img = h_filtered_image + v_filtered_image
-    elif name == 'prewitt':
+    else:
         h_kernel = np.array([[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]])
         h_filtered_image = make_convolution(img, h_kernel)
 
         v_kernel = np.array([[-1, -1, -1], [0, 0, 0], [1, 1, 1]])
-        v_filtered_image = make_convolution(img, v_kernel)
-
-        aux_img = h_filtered_image + v_filtered_image
-    else:
-        h_kernel = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
-        h_filtered_image = make_convolution(img, h_kernel)
-
-        v_kernel = np.array([[-1, -2, -1], [0, 0, 0], [-1, -2, -1]])
         v_filtered_image = make_convolution(img, v_kernel)
 
         aux_img = h_filtered_image + v_filtered_image
