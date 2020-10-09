@@ -11,8 +11,7 @@ def run_pipeline():
     raw_img = read_img('phone_0.png')
     gray_img = change_img_color(raw_img, cv2.COLOR_BGR2GRAY)
     edge_img = apply_filter(gray_img, 'sobel')
-    plt.imshow(edge_img)
-    plt.show()
+    show_img(edge_img)
 
 
 def read_img(path):
@@ -77,6 +76,22 @@ def make_convolution(img, kernel):
         for j in range(1, img.shape[1]-1):
             aux[i][j] = np.sum(img[i-1:i+2, j-1:j+2] * kernel)
     return aux
+
+
+def show_img(img, param=''):
+    """
+    # Show Image
+    This function plot image with opencv or matplotlib.
+
+    By default we use matplotlib.
+    """
+    if param == 'cv':
+        cv2.imshow('Result Image', img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+    else:
+        plt.imshow(img)
+        plt.show()
 
 
 if __name__ == "__main__":
