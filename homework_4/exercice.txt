@@ -6,20 +6,20 @@ uma função que o descreva; -------------------------------------------------> 
 (tons de cinza), caso ela seja colorida; -----------------------------------> OK
 
 3) Encontre as bordas da imagem monocromática,
-utilizando um filtro passa-alta derivativo (por exemplo, sobel); ----------->
+utilizando um filtro passa-alta derivativo (por exemplo, sobel); -----------> OK
 
 4) Encontre o centro de massa dos pontos de borda do objeto
-(centróide);
+(centróide); ---------------------------------------------------------------> 
 
 5) Construa uma tabela de referência, conhecida como tabela-R para
 armazenar os dois parâmetros r e α (veja Transformada de Hough Generalizada)
-referentes a este objeto;
+referentes a este objeto; --------------------------------------------------> 
 
 6) Leia uma imagem digital (pode ser colorida) de consulta, contendo objetos
-variados, dentre eles o objeto contido na imagem de referência;
+variados, dentre eles o objeto contido na imagem de referência; ------------>  
 
 7) Utilize a Transformada de Hough Generalizada para dizer se a imagem de
 consulta contém o objeto de referência, que poderá estar rotacionado ou com
 tamanho maior ou menor do que o o objeto de referência. Em caso positivo,
 retorne a localização do objeto de referência na imagem de consulta
-(coordenadas do centro de massa do objeto).
+(coordenadas do centro de massa do objeto). ---------------------------------> 
