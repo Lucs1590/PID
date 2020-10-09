@@ -11,7 +11,7 @@ def run_pipeline():
     raw_img = read_img('phone_0.png')
     gray_img = change_img_color(raw_img, cv2.COLOR_BGR2GRAY)
     edge_img = apply_filter(gray_img, 'sobel')
-    show_img(edge_img)
+    show_img(edge_img, 'cv')
 
 
 def read_img(path):
@@ -70,7 +70,7 @@ def make_convolution(img, kernel):
     # Make Convolution
     https://en.wikipedia.org/wiki/Convolution
     """
-    aux = img.copy()
+    aux = np.zeros_like(img)
 
     for i in range(1, img.shape[0]-1):
         for j in range(1, img.shape[1]-1):
@@ -86,7 +86,7 @@ def show_img(img, param=''):
     By default we use matplotlib.
     """
     if param == 'cv':
-        cv2.imshow('Result Image', img)
+        cv2.imwrite('result_img/result.png', img)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
     else:
