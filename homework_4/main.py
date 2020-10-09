@@ -11,6 +11,9 @@ def run_pipeline():
     raw_img = read_img('phone_0.png')
     gray_img = change_img_color(raw_img, cv2.COLOR_BGR2GRAY)
     edge_img = apply_filter(gray_img, 'sobel')
+    # find centroids
+    # read test image
+    # find object into image
     # show_img(edge_img, 'cv')
 
 
