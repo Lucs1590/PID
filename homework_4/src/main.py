@@ -100,12 +100,23 @@ def build_r_table(img):
     border_values = find_border_values(img)
     r_table = define_default_r_table(len(border_values))
     xc, yc = (img.shape[0]/2, img.shape[1]/2)
+
+    keys_r_table = list(r_table.keys())
     for values in border_values:
         (x, y, value) = values
         r = math.sqrt((x-xc)**2 + (y-yc)**2)
         alpha = math.atan((y-yc)/(x-xc)) if x != xc else 0
-        # TODO: Calculate angle and add on r_table
-    return r_table
+
+        angle = math.atan2(y, x) * 180 / math.pi
+        angle = find_nearest(keys_r_table, angle)
+
+        r_table[angle].append([r, alpha])
+
+    # angle, r, alpha
+    clean_r_table = list(filter(lambda values_r_table: len(
+        values_r_table[1]) > 0, r_table.items()))
+
+    return clean_r_table, border_values
 
 
 def find_border_values(img):
@@ -131,6 +142,16 @@ def define_default_r_table(k):
         gradient = round(gradient + 180/k, 2)
         r_table[gradient]
     return r_table
+
+
+def find_nearest(array, value):
+    """
+    # Find nearest values
+    Find the value closest on the list
+    """
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return array[idx]
 
 
 if __name__ == "__main__":
