@@ -14,9 +14,8 @@ def run_pipeline():
     gray_img = change_img_color(raw_img, cv2.COLOR_BGR2GRAY)
     edge_img = apply_filter(gray_img, 'sobel')
     # show_img(edge_img, 'cv')
-    r_table = build_r_table(edge_img)
-    # find centroids
-    # read test image
+    (r_table, border_values) = build_r_table(edge_img)
+    has_object = detect_object('img/objects.png', r_table)
     # find object into image
 
 
@@ -99,11 +98,12 @@ def build_r_table(img):
     """
     border_values = find_border_values(img)
     r_table = define_default_r_table(len(border_values))
-    xc, yc = (img.shape[0]/2, img.shape[1]/2)
+    yc, xc = (img.shape[0]/2, img.shape[1]/2)
 
     keys_r_table = list(r_table.keys())
+
     for values in border_values:
-        (x, y, value) = values
+        (y, x, value) = values
         r = math.sqrt((x-xc)**2 + (y-yc)**2)
         alpha = math.atan((y-yc)/(x-xc)) if x != xc else 0
 
@@ -152,6 +152,14 @@ def find_nearest(array, value):
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
     return array[idx]
+
+
+def detect_object(test_image, r_table):
+    """
+    # Detect Object
+    Reads an image that contains several things, including the detected object.
+    """
+    return True
 
 
 if __name__ == "__main__":
