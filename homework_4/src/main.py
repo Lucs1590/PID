@@ -15,7 +15,7 @@ def run_pipeline():
     edge_img = apply_filter(gray_img, 'sobel')
     # show_img(edge_img, 'cv')
     (r_table, border_values) = build_r_table(edge_img)
-    has_object = detect_object('img/objects.png', r_table)
+    has_object = detect_object('img/objects.png', r_table, 2, 5)
     # find object into image
 
 
@@ -96,7 +96,9 @@ def build_r_table(img):
     # Build R Table
     Building r table acording edge image
     """
+    # y, x, values
     border_values = find_border_values(img)
+    # angle: [r, alpha]
     r_table = define_default_r_table(len(border_values))
     yc, xc = (img.shape[0]/2, img.shape[1]/2)
 
@@ -111,12 +113,10 @@ def build_r_table(img):
         angle = find_nearest(keys_r_table, angle)
 
         r_table[angle].append([r, alpha])
+    # clean_r_table = list(filter(lambda values_r_table: len(
+    #     values_r_table[1]) > 0, r_table.items()))
 
-    # angle, r, alpha
-    clean_r_table = list(filter(lambda values_r_table: len(
-        values_r_table[1]) > 0, r_table.items()))
-
-    return clean_r_table, border_values
+    return r_table, border_values
 
 
 def find_border_values(img):
@@ -154,12 +154,41 @@ def find_nearest(array, value):
     return array[idx]
 
 
-def detect_object(test_image, r_table):
+def detect_object(test_image, r_table, max_scale, _max_rotation):
     """
     # Detect Object
     Reads an image that contains several things, including the detected object.
     """
-    return True
+    img = read_img(test_image)
+    gray_img = change_img_color(img, cv2.COLOR_BGR2GRAY)
+    edge_img = apply_filter(gray_img, 'prewitt')
+    borders = find_border_values(edge_img)
+    M = {}
+    # M[x,y,S,rotation] = 0
+    S_range = range(0, max_scale)
+    rotation_range = range(0, _max_rotation)
+
+    keys_r_table = list(r_table.keys())
+
+    for values in borders:
+        (y, x, value) = values
+        angle = math.atan2(y, x) * 180 / math.pi
+        angle = find_nearest(keys_r_table, angle)
+
+        for r, alpha in r_table[angle]:
+            # TODO: [rotations, S] and make only one for
+            for rotation in rotation_range:
+                for S in S_range:
+                    xc = x + r * S * math.sin(alpha + rotation)
+                    yc = y + r * S * math.sin(alpha + rotation)
+                    index = (int(xc), int(yc), int(S), int(rotation))
+                    M[index] = M[index] + 1 if index in list(M.keys()) else 1
+
+    # TODO: rename xyabc
+    xyabc = list(M.keys())[list(M.values()).index(max(M.values()))]
+    img = cv2.circle(img, xyabc[0:2], 2, (0, 0, 255), 2)
+    show_img(img, 'cv')
+    return xyabc if xyabc else None
 
 
 if __name__ == "__main__":
