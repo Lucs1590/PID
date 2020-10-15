@@ -105,15 +105,19 @@ def build_r_table(img):
 
     keys_r_table = list(r_table.keys())
 
-    for values in border_values:
-        (y, x, value) = values
-        r = math.sqrt((x-xc)**2 + (y-yc)**2)
-        alpha = math.atan((y-yc)/(x-xc)) if x != xc else 0
+    alpha_list = list(map(
+        lambda bv: math.atan((bv[0]-yc)/(bv[1]-xc)) if bv[1] != xc else 0, border_values))
 
-        angle = math.atan2(y, x) * 180 / math.pi
-        angle = find_nearest(keys_r_table, angle)
+    r_list = list(map(
+        lambda bv: math.sqrt((bv[1]-xc)**2 + (bv[0]-yc)**2), border_values))
 
-        r_table[angle].append([r, alpha])
+    angle_list = list(map(
+        lambda bv: find_nearest(keys_r_table, math.atan2(bv[0], bv[1]) * 180 / math.pi), border_values))
+
+    idx = 0
+    while idx < len(angle_list):
+        r_table[angle_list[idx]].append([r_list[idx], alpha_list[idx]])
+        idx += 1
     # clean_r_table = list(filter(lambda values_r_table: len(
     #     values_r_table[1]) > 0, r_table.items()))
 
@@ -170,6 +174,12 @@ def detect_object(test_image, r_table, max_scale, _max_rotation):
     rotation_range = range(0, _max_rotation)
 
     keys_r_table = list(r_table.keys())
+
+    angle_list = list(map(
+        lambda bv: find_nearest(keys_r_table, math.atan2(
+            bv[0], bv[1]) * 180 / math.pi),
+        list(filter(
+            lambda border_values: border_values[2], borders))))
 
     for values in borders:
         (y, x, value) = values
