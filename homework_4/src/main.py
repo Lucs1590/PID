@@ -175,25 +175,26 @@ def detect_object(test_image, r_table, max_scale, _max_rotation):
 
     keys_r_table = list(r_table.keys())
 
+    y_x_list = list(map(lambda bv: (bv[0], bv[1]), list(filter(
+        lambda bv: bv[2], borders))))
+
     angle_list = list(map(
-        lambda bv: find_nearest(keys_r_table, math.atan2(
-            bv[0], bv[1]) * 180 / math.pi),
-        list(filter(
-            lambda border_values: border_values[2], borders))))
+        lambda yx: find_nearest(keys_r_table, math.atan2(yx[0], yx[1]) * 180 / math.pi), y_x_list))
 
-    for values in borders:
-        (y, x, value) = values
-        angle = math.atan2(y, x) * 180 / math.pi
-        angle = find_nearest(keys_r_table, angle)
+    r_alpha_list = list(map(lambda angle: r_table[angle], angle_list))
 
-        for r, alpha in r_table[angle]:
-            # TODO: [rotations, S] and make only one for
-            for rotation in rotation_range:
-                for S in S_range:
-                    xc = x + r * S * math.sin(alpha + rotation)
-                    yc = y + r * S * math.sin(alpha + rotation)
-                    index = (int(xc), int(yc), int(S), int(rotation))
-                    M[index] = M[index] + 1 if index in list(M.keys()) else 1
+    complete_list = list(filter(
+        lambda values: values[2], list(map(
+            lambda coord, angle_list, r_alpha: [coord, angle_list, r_alpha], y_x_list, angle_list, r_alpha_list))))
+
+    for r, alpha in r_table[angle]:
+        # TODO: [rotations, S] and [x, y, r, alpha]
+        for rotation in rotation_range:
+            for S in S_range:
+                xc = x + r * S * math.sin(alpha + rotation)
+                yc = y + r * S * math.sin(alpha + rotation)
+                index = (int(xc), int(yc), int(S), int(rotation))
+                M[index] = M[index] + 1 if index in list(M.keys()) else 1
 
     # TODO: rename xyabc
     xyabc = list(M.keys())[list(M.values()).index(max(M.values()))]
