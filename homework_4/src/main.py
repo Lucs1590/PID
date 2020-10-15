@@ -15,7 +15,8 @@ def run_pipeline():
     edge_img = apply_filter(gray_img, 'sobel')
     # show_img(edge_img, 'cv')
     (r_table, border_values) = build_r_table(edge_img)
-    has_object = detect_object('img/objects.png', r_table, 2, 5)
+    object_location = detect_object('img/objects.png', r_table, 2, 5)
+    print(object_location)
     # find object into image
 
 
