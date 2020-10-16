@@ -195,6 +195,7 @@ def detect_object(img, r_table, max_scale, max_rotation, range_best=0):
 
     if range_best:
         best_values = Counter(M).most_common(range_best)
+        best_values = list(map(lambda location: location[0], best_values))
     else:
         best_values = [list(M.keys())[list(M.values()).index(max(M.values()))]]
 
