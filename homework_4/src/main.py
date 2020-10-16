@@ -16,7 +16,7 @@ def run_pipeline():
     (r_table, border_values) = build_r_table(edge_img)
 
     test_img = read_img('img/objects.png')
-    object_locations = detect_object(test_img, r_table, 2, 5)
+    object_locations = detect_object(test_img, r_table, 2, 5, 5)
     if object_locations:
         paint_image(raw_img, test_img, object_locations)
     else:
