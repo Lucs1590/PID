@@ -13,13 +13,12 @@ def run_pipeline():
     raw_img = read_img('img/input_1.png')
     gray_img = change_img_color(raw_img, cv2.COLOR_BGR2GRAY)
     edge_img = apply_filter(gray_img, 'sobel')
-    # show_img(edge_img, 'cv')
     (r_table, border_values) = build_r_table(edge_img)
 
     test_img = read_img('img/objects.png')
     object_locations = detect_object(test_img, r_table, 2, 5)
     if object_locations:
-        paint_image(test_img, object_locations)
+        paint_image(raw_img, test_img, object_locations)
     else:
         print('Erro ao encontrar o objeto na imagem!')
     return object_locations[0]
@@ -79,22 +78,6 @@ def make_convolution(img, kernel):
         for j in range(1, img.shape[1]-1):
             aux[i][j] = np.sum(img[i-1:i+2, j-1:j+2] * kernel)
     return aux
-
-
-def show_img(img, param=''):
-    """
-    # Show Image
-    This function plot image with opencv or matplotlib.
-
-    By default we use matplotlib.
-    """
-    if param == 'cv':
-        cv2.imwrite('result_img/result.png', img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-    else:
-        plt.imshow(img)
-        plt.show()
 
 
 def build_r_table(img):
@@ -256,12 +239,31 @@ def add_rotation_scale(list_of_values, range_r_s):
     return complete_list
 
 
-def paint_image(img, object_locations):
+def paint_image(reference_img, test_img, object_locations):
     """
     # Paint Image
-    Paint image with the location of objects
+    Paint image with the location of objects.
     """
-    pass
+    cv2.imwrite('result_img/reference_img.png', reference_img)
+    cv2.imwrite('result_img/test_img.png', test_img)
+
+    idx = 0
+    while idx < len(object_locations):
+        location = object_locations[idx][0:2]
+        color = (0, 204, 255)
+        if idx == 0:
+            color = (0, 0, 255)
+        test_img = cv2.circle(test_img, location, 2, color, 2)
+        print('\n{}º - {}\nRotação: {}\nEscala: {}'.format(idx+1, location,
+                                                           object_locations[idx][3], object_locations[idx][2]))
+
+        idx += 1
+
+    cv2.imwrite('result_img/located_points.png', test_img)
+
+    print('\nAs imagens dos resultados foram salvas em: result_img/ .')
+    print('O circulo vermelho indica o melhor resultado e o(s) em amarelo, é(são) o(s) seguinte(s).') if len(
+        object_locations) > 1 else ...
 
 
 if __name__ == "__main__":
