@@ -22,4 +22,4 @@ variados, dentre eles o objeto contido na imagem de referência; ------------> O
 consulta contém o objeto de referência, que poderá estar rotacionado ou com
 tamanho maior ou menor do que o o objeto de referência. Em caso positivo,
 retorne a localização do objeto de referência na imagem de consulta
-(coordenadas do centro de massa do objeto). ---------------------------------> 
+(coordenadas do centro de massa do objeto). ---------------------------------> OK
