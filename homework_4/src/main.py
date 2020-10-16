@@ -2,7 +2,7 @@ import cv2
 import math
 import numpy as np
 import matplotlib.pyplot as plt
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 
 def run_pipeline():
@@ -15,9 +15,14 @@ def run_pipeline():
     edge_img = apply_filter(gray_img, 'sobel')
     # show_img(edge_img, 'cv')
     (r_table, border_values) = build_r_table(edge_img)
-    object_location = detect_object('img/objects.png', r_table, 2, 5)
-    print(object_location)
-    # find object into image
+
+    test_img = read_img('img/objects.png')
+    object_locations = detect_object(test_img, r_table, 2, 5)
+    if object_locations:
+        paint_image(test_img, object_locations)
+    else:
+        print('Erro ao encontrar o objeto na imagem!')
+    return object_locations[0]
 
 
 def read_img(path):
@@ -159,48 +164,104 @@ def find_nearest(array, value):
     return array[idx]
 
 
-def detect_object(test_image, r_table, max_scale, _max_rotation):
+def detect_object(img, r_table, max_scale, max_rotation, range_best=0):
     """
     # Detect Object
     Reads an image that contains several things, including the detected object.
     """
-    img = read_img(test_image)
     gray_img = change_img_color(img, cv2.COLOR_BGR2GRAY)
     edge_img = apply_filter(gray_img, 'prewitt')
     borders = find_border_values(edge_img)
     M = {}
     # M[x,y,S,rotation] = 0
     S_range = range(0, max_scale)
-    rotation_range = range(0, _max_rotation)
+    rotation_range = range(0, max_rotation)
 
     keys_r_table = list(r_table.keys())
-
     y_x_list = list(map(lambda bv: (bv[0], bv[1]), list(filter(
         lambda bv: bv[2], borders))))
-
     angle_list = list(map(
         lambda yx: find_nearest(keys_r_table, math.atan2(yx[0], yx[1]) * 180 / math.pi), y_x_list))
-
+    del keys_r_table
     r_alpha_list = list(map(lambda angle: r_table[angle], angle_list))
-
+    del angle_list
     complete_list = list(filter(
-        lambda values: values[2], list(map(
-            lambda coord, angle_list, r_alpha: [coord, angle_list, r_alpha], y_x_list, angle_list, r_alpha_list))))
+        lambda values: values[1], list(map(
+            lambda coord, r_alpha: [coord, r_alpha], y_x_list, r_alpha_list))))
+    del y_x_list
+    del r_alpha_list
 
-    for r, alpha in r_table[angle]:
-        # TODO: [rotations, S] and [x, y, r, alpha]
-        for rotation in rotation_range:
-            for S in S_range:
-                xc = x + r * S * math.sin(alpha + rotation)
-                yc = y + r * S * math.sin(alpha + rotation)
-                index = (int(xc), int(yc), int(S), int(rotation))
-                M[index] = M[index] + 1 if index in list(M.keys()) else 1
+    complete_list = remove_dimensions(complete_list)
 
-    # TODO: rename xyabc
-    xyabc = list(M.keys())[list(M.values()).index(max(M.values()))]
-    img = cv2.circle(img, xyabc[0:2], 2, (0, 0, 255), 2)
-    show_img(img, 'cv')
-    return xyabc if xyabc else None
+    complete_list = add_rotation_scale(complete_list, rotation_range)
+    complete_list = add_rotation_scale(complete_list, S_range)
+
+    # x + r * S * math.sin(alpha + rotation)
+    xc_list = list(map(
+        lambda value: value[0][1] + value[1][0] * value[3] * math.sin(value[1][1] + value[2]), complete_list))
+    # y + r * S * math.sin(alpha + rotation)
+    yc_list = list(map(
+        lambda value: value[0][0] + value[1][0] * value[3] * math.sin(value[1][1] + value[2]), complete_list))
+
+    idx = 0
+    while idx < len(complete_list):
+        index = (int(xc_list[idx]), int(yc_list[idx]), int(
+            complete_list[idx][3]), int(complete_list[idx][2]))
+        M[index] = M[index] + 1 if index in list(M.keys()) else 1
+        idx += 1
+
+    if range_best:
+        best_values = Counter(M).most_common(range_best)
+    else:
+        best_values = [list(M.keys())[list(M.values()).index(max(M.values()))]]
+
+    return best_values if best_values else None
+
+
+def remove_dimensions(list_r_alpha):
+    """
+    # Remove dimension
+    In other words, we broke lists with more than one r and alpha.
+    """
+    idx = 0
+    complete_list = []
+
+    while idx < len(list_r_alpha):
+        idx_2 = 0
+        curr_value = list_r_alpha[idx]
+        while idx_2 < len(curr_value[-1]):
+            complete_list.append(
+                [curr_value[0], curr_value[-1][idx_2]])
+            idx_2 += 1
+        idx += 1
+    return complete_list
+
+
+def add_rotation_scale(list_of_values, range_r_s):
+    """
+    # Add Rotation or Scale
+    """
+    complete_list = []
+    aux_list = [list_of_values for i in range_r_s]
+    idx = 0
+    while idx < len(range_r_s):
+        idx_2 = 0
+        curr_list = aux_list[idx]
+        while idx_2 < len(curr_list):
+            curr_list_cp = curr_list[idx_2].copy()
+            curr_list_cp.append(idx)
+            complete_list.append(curr_list_cp)
+            idx_2 += 1
+        idx += 1
+    return complete_list
+
+
+def paint_image(img, object_locations):
+    """
+    # Paint Image
+    Paint image with the location of objects
+    """
+    pass
 
 
 if __name__ == "__main__":
