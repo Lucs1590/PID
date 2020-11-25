@@ -38,4 +38,4 @@ octave-workspace
 # End of https://www.toptal.com/developers/gitignore/api/octave
 
 .vscode
-face/arface/*
+homework_5/arface/*
