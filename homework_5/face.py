@@ -21,10 +21,13 @@ from mtcnn import MTCNN
 def main():
     _path = '/home/brito/Documentos/Mestrado/PDI/codigos/homework_5'
     # path.abspath(os.getcwd())
+    print('Dataset verify')
     load_dataset(_path)
     _path = _path + '/arface'
+    print('Run MTCNN')
     faces_desc_mtcnn = detect_faces_mtcnn(
         _path + '/face', _path + '/mtcnn_detect')
+    print('Run LBP')
     faces_desc_lbp = run_lbp()
 
 
@@ -85,11 +88,15 @@ def detect_faces_mtcnn(_path, destination):
             faces.append(detected_face)
             copy_file(arquivo, destination)
 
+    detected = list(map(lambda aqv: aqv.split('/')[-1].split('-')[-1].split('_')[0],glob.glob(path.join(destination, "*.bmp"))))
+    count_detected = {i:detected.count(i) for i in detected}
+    print(count_detected)
     return faces
 
 
 def copy_file(file, destination):
-    shutil.copy2(file, destination)
+    if not path.isfile(destination):
+        shutil.copy2(file, destination)
 
 
 """Local Binary Pattern (LBP)"""
@@ -144,6 +151,8 @@ def get_pixel(img, center, x, y):
 
     return new_value
 
+
+""" Applying Filters """
 
 if __name__ == "__main__":
     main()
