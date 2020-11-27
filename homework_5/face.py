@@ -109,6 +109,17 @@ def copy_file(file, destination):
         shutil.copy2(file, destination)
 
 
+def plot_poits(_image, detected_face):
+    if len(detected_face):
+        x1, y1, x2, y2 = detected_face[0]['box']
+        _image = cv2.rectangle(_image, (x1, y1), (x2, y2), (255, 0, 0), 2)
+        for point in detected_face[0]['keypoints'].values():
+            x, y = point
+            _image = cv2.circle(_image, (x, y), radius=1,
+                                color=(0, 0, 255), thickness=3)
+    return _image
+
+
 """Local Binary Pattern (LBP)"""
 
 
