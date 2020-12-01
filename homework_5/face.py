@@ -23,17 +23,17 @@ def main():
     _path = '/home/brito/Documentos/Mestrado/PDI/codigos/homework_5'
     # path.abspath(os.getcwd())
     print('Dataset verify')
-    load_dataset(_path)
+    # load_dataset(_path)
     _path = _path + '/arface'
 
     print('Run MTCNN')
-    (faces_desc_mtcnn, labels_desc_mtcnn) = detect_faces_mtcnn(
-        _path + '/face', _path + '/mtcnn_detect')
+    # (faces_desc_mtcnn, labels_desc_mtcnn) = detect_faces_mtcnn(
+    #    _path + '/face', _path + '/mtcnn_detect')
 
     print('Run LBP')
-    faces_desc_lbp = run_lbp()
+    # faces_desc_lbp = run_lbp(_path + '/mtcnn_detect')
     (faces_desc_lbp_2, labels_desc_lbp_2, model) = run_lbp_2(
-        _path + '/face', _path + '/lbp_detect')
+        _path + '/mtcnn_detect', _path + '/lbp_detect')
     # classify_lbp(_path + '/lbp_detect', model)
 
 
@@ -151,10 +151,10 @@ def run_lbp_2(_path, destination):
         gray_img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2GRAY)
         hist = desc.describe(gray_img)
 
-        if hist:
+        if len(hist) > 0:
             labels.append(_file.split(os.path.sep)[-1].split('-')[1])
             faces.append(hist)
-            copy_file(_file, destination)
+            # copy_file(_file, destination)
 
     model = LinearSVC(C=100.0, random_state=42)
     model.fit(faces, labels)
@@ -176,56 +176,6 @@ def classify_lbp(_path, model):
                     1.0, (0, 0, 255), 3)
         cv2.imshow("Image", image)
         cv2.waitKey(0)
-
-
-def run_lbp(_path):
-    images = []
-
-    for _file in glob.glob(path.join(_path, "*.bmp")):
-        img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2RGB)
-        img_gray = cv2.cvtColor(cv2.imread(img), cv2.COLOR_BGR2GRAY)
-        height, width = img_gray.shape
-        img_lbp = np.zeros((height, width), np.uint8)
-
-        for i in range(0, height):
-            for j in range(0, width):
-                img_lbp[i, j] = lbp_calculated_pixel(img_gray, i, j)
-        images.append(img_lbp)
-
-    return img_lbp
-
-
-def lbp_calculated_pixel(img, x, y):
-    center = img[x][y]
-    val_ar = []
-
-    val_ar.append(get_pixel(img, center, x-1, y-1))
-    val_ar.append(get_pixel(img, center, x-1, y))
-    val_ar.append(get_pixel(img, center, x-1, y + 1))
-    val_ar.append(get_pixel(img, center, x, y + 1))
-    val_ar.append(get_pixel(img, center, x + 1, y + 1))
-    val_ar.append(get_pixel(img, center, x + 1, y))
-    val_ar.append(get_pixel(img, center, x + 1, y-1))
-    val_ar.append(get_pixel(img, center, x, y-1))
-
-    power_val = [1, 2, 4, 8, 16, 32, 64, 128]
-    val = 0
-
-    for i in range(len(val_ar)):
-        val += val_ar[i] * power_val[i]
-
-    return val
-
-
-def get_pixel(img, center, x, y):
-    new_value = 0
-    try:
-        if img[x][y] >= center:
-            new_value = 1
-    except:
-        pass
-
-    return new_value
 
 
 """ Applying Filters """
