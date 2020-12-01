@@ -22,18 +22,19 @@ from sklearn.svm import LinearSVC
 def main():
     _path = '/home/brito/Documentos/Mestrado/PDI/codigos/homework_5'
     # path.abspath(os.getcwd())
-    print('Dataset verify')
-    # load_dataset(_path)
+    print('INFO: Dataset verify')
+    load_dataset(_path)
     _path = _path + '/arface'
 
-    print('Run MTCNN')
+    print('INFO: Run MTCNN')
     # (faces_desc_mtcnn, labels_desc_mtcnn) = detect_faces_mtcnn(
     #    _path + '/face', _path + '/mtcnn_detect')
 
-    print('Run LBP')
-    # faces_desc_lbp = run_lbp(_path + '/mtcnn_detect')
-    (faces_desc_lbp_2, labels_desc_lbp_2, model) = run_lbp_2(
-        _path + '/mtcnn_detect', _path + '/lbp_detect')
+    print('INFO: Divide dataset')
+    divide_dataset(_path, 80, 20)
+
+    print('INFO: Run LBP')
+    (faces_desc_lbp, labels_desc_lbp, model) = run_lbp(_path + '/training')
     # classify_lbp(_path + '/lbp_detect', model)
 
 
@@ -50,8 +51,9 @@ def load_dataset(_path):
     if not path.isdir(destination + '/mtcnn_detect'):
         os.mkdir(destination + '/mtcnn_detect')
 
-    if not path.isdir(destination + '/lbp_detect'):
-        os.mkdir(destination + '/lbp_detect')
+    if not path.isdir(destination + '/training'):
+        os.mkdir(destination + '/training')
+        os.mkdir(destination + '/test')
 
     if not path.isdir(destination + '/face'):
         get_dataset(dataset_file, destination)
@@ -59,7 +61,7 @@ def load_dataset(_path):
         unzip_file(dataset_file, destination)
     else:
         if path.isdir(destination + '/face'):
-            print('Dataset is set!')
+            print('INFO: Dataset is set!')
         else:
             raise OSError(
                 'the default directory of Python is not found.')
@@ -100,7 +102,7 @@ def detect_faces_mtcnn(_path, destination):
     detected = list(map(lambda aqv: aqv.split(
         os.path.sep)[-1].split('-')[-1].split('_')[0], glob.glob(path.join(destination, "*.bmp"))))
     count_detected = {i: detected.count(i) for i in detected}
-    print(count_detected)
+    print('INFO:', count_detected)
     return faces, labels
 
 
@@ -118,6 +120,35 @@ def plot_poits(_image, detected_face):
             _image = cv2.circle(_image, (x, y), radius=1,
                                 color=(0, 0, 255), thickness=3)
     return _image
+
+
+""" Divide Dataset """
+
+
+def divide_dataset(_path, percentage_train=80, percentage_test=20):
+    pictures = glob.glob(path.join(_path + '/mtcnn_detect', "*.bmp")).copy()
+    total_images = len(pictures)
+
+    percentage_train = (percentage_train/100)
+    percentage_test = (percentage_test/100)
+
+    if percentage_train + percentage_test < 1 \
+            or percentage_train + percentage_test > 1:
+        raise ValueError('invalid train/test percentage.')
+
+    i = 0
+    while i < int(total_images*percentage_train):
+        rand_image = random.choice(pictures)
+        copy_file(rand_image, _path+'/training')
+        pictures.remove(rand_image)
+        i += 1
+
+    i = 0
+    while i < len(pictures):
+        rand_image = random.choice(pictures)
+        copy_file(rand_image, _path+'/test')
+        pictures.remove(rand_image)
+        i += 1
 
 
 """Local Binary Pattern (LBP)"""
@@ -141,7 +172,7 @@ class LocalBinaryPatterns:
         return hist
 
 
-def run_lbp_2(_path, destination):
+def run_lbp(_path):
     desc = LocalBinaryPatterns(24, 8)
     faces = []
     labels = []
@@ -154,7 +185,6 @@ def run_lbp_2(_path, destination):
         if len(hist) > 0:
             labels.append(_file.split(os.path.sep)[-1].split('-')[1])
             faces.append(hist)
-            # copy_file(_file, destination)
 
     model = LinearSVC(C=100.0, random_state=42)
     model.fit(faces, labels)
