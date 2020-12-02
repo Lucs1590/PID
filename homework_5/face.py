@@ -20,6 +20,7 @@ from sklearn.svm import LinearSVC
 
 
 def main():
+    os.environ['DISPLAY'] = ':0'
     _path = '/home/brito/Documentos/Mestrado/PDI/codigos/homework_5'
     # path.abspath(os.getcwd())
     print('INFO: Dataset verify')
@@ -31,11 +32,13 @@ def main():
     #    _path + '/face', _path + '/mtcnn_detect')
 
     print('INFO: Divide dataset')
-    divide_dataset(_path, 80, 20)
+    # divide_dataset(_path, 80, 20)
 
     print('INFO: Run LBP')
     (faces_desc_lbp, labels_desc_lbp, model) = run_lbp(_path + '/training')
-    # classify_lbp(_path + '/lbp_detect', model)
+
+    print('INFO: Classifing Images')
+    classify_lbp(_path, model)
 
 
 """ Download Dataset """
@@ -194,18 +197,27 @@ def run_lbp(_path):
 
 def classify_lbp(_path, model):
     desc = LocalBinaryPatterns(24, 8)
+    hit = 0
+    miss = 0
 
-    for _file in glob.glob(path.join(_path, "*.bmp")):
+    for _file in glob.glob(path.join(_path+'/test', "*.bmp")):
         image = cv2.imread(_file)
         gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         hist = desc.describe(gray_img)
         prediction = model.predict(hist.reshape(1, -1))
 
+        if prediction[0] == _file.split(os.path.sep)[-1].split('-')[1]:
+            hit += 1
+        else:
+            miss += 1
+
         # display the image and the prediction
         cv2.putText(image, prediction[0], (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
                     1.0, (0, 0, 255), 3)
-        cv2.imshow("Image", image)
+        cv2.imwrite(_path+'/lbp-detected/'+_file.split(os.path.sep)[-1], image)
         cv2.waitKey(0)
+
+    return hit, miss
 
 
 """ Applying Filters """
