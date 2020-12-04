@@ -12,9 +12,14 @@ import numpy as np
 from os import path
 from matplotlib import pyplot as plt
 # from google.colab.patches import cv2_imshow
+from PIL import Image
 from mtcnn import MTCNN
 from skimage import feature
 from sklearn.svm import LinearSVC
+from scipy.spatial.distance import cosine
+from keras_vggface.vggface import VGGFace
+from keras_vggface.utils import preprocess_input
+from keras_vggface.utils import decode_predictions
 
 """ Main Function """
 
@@ -37,8 +42,11 @@ def main():
     print('INFO: Run LBP')
     (faces_desc_lbp, labels_desc_lbp, model) = run_lbp(_path + '/training')
 
-    print('INFO: Classifing Images')
-    classify_lbp(_path, model)
+    print('INFO: Classifing Images (LBP)')
+    # classify_lbp(_path, model)
+
+    print('INFO: Classifing Images (VGGFACE2)')
+    classify_vgg('resnet50', _path)
 
 
 """ Download Dataset """
@@ -100,13 +108,23 @@ def detect_faces_mtcnn(_path, destination):
         if detected_face:
             labels.append(_file.split(os.path.sep)[-1].split('-')[1])
             faces.append(detected_face)
-            copy_file(_file, destination)
+            save_file(detected_face, img, destination,
+                      _file.split(os.path.sep)[-1])
 
     detected = list(map(lambda aqv: aqv.split(
         os.path.sep)[-1].split('-')[-1].split('_')[0], glob.glob(path.join(destination, "*.bmp"))))
     count_detected = {i: detected.count(i) for i in detected}
     print('INFO:', count_detected)
     return faces, labels
+
+
+def save_file(detected_face, img, destination, file_name, required_size=(224, 224)):
+    x1, y1, width, height = detected_face[0]['box']
+    x2, y2 = x1 + width, y1 + height
+    face = img[y1:y2, x1:x2]
+    image = Image.fromarray((face).astype(np.uint8))
+    image = image.resize(required_size)
+    image.save(destination+os.path.sep+file_name)
 
 
 def copy_file(file, destination):
@@ -218,6 +236,24 @@ def classify_lbp(_path, model):
         cv2.waitKey(0)
 
     return hit, miss
+
+
+""" VGGFACE """
+
+
+def classify_vgg(_model, _path):
+    model = VGGFace(model='resnet50')
+    print('Inputs: %s' % model.inputs)
+    print('Outputs: %s' % model.outputs)
+
+    for _file in glob.glob(path.join(_path, "*.bmp")):
+        img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2RGB)
+        samples = np.expand_dims(img, axis=0)
+        samples = preprocess_input(samples, version=2)
+        yhat = model.predict(samples)
+        results = decode_predictions(yhat)
+        for result in results[0]:
+            print('%s: %.3f%%' % (result[0], result[1]*100))
 
 
 """ Applying Filters """
