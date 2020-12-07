@@ -15,6 +15,7 @@ from matplotlib import pyplot as plt
 from PIL import Image
 from mtcnn import MTCNN
 from skimage import feature
+from natsort import natsorted
 from sklearn.svm import LinearSVC
 from scipy.spatial.distance import cosine
 from keras_vggface.vggface import VGGFace
@@ -29,7 +30,7 @@ def main():
     _path = '/home/brito/Documentos/Mestrado/PDI/codigos/homework_5'
     # path.abspath(os.getcwd())
     print('INFO: Dataset verify')
-    load_dataset(_path)
+    # load_dataset(_path)
     _path = _path + '/arface'
 
     print('INFO: Run MTCNN')
@@ -37,13 +38,13 @@ def main():
     #    _path + '/face', _path + '/mtcnn_detect')
 
     print('INFO: Divide dataset')
-    # divide_dataset(_path, 80, 20)
+    divide_dataset(_path, 80, 20)
 
     print('INFO: Run LBP')
     (faces_desc_lbp, labels_desc_lbp, model) = run_lbp(_path + '/training')
 
     print('INFO: Classifing Images (LBP)')
-    # classify_lbp(_path, model)
+    classify_lbp(_path, model)
 
     print('INFO: Classifing Images (VGGFACE2)')
     classify_vgg('resnet50', _path)
@@ -101,8 +102,10 @@ def unzip_file(_file, destination):
 def detect_faces_mtcnn(_path, destination):
     faces = []
     labels = []
+    pictures = glob.glob(path.join(_path, "*.bmp")).copy()
+    pictures = natsorted(pictures)
 
-    for _file in glob.glob(path.join(_path, "*.bmp")):
+    for _file in pictures:
         img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2RGB)
         detected_face = MTCNN().detect_faces(img)
         if detected_face:
@@ -121,6 +124,16 @@ def detect_faces_mtcnn(_path, destination):
 def save_file(detected_face, img, destination, file_name, required_size=(224, 224)):
     x1, y1, width, height = detected_face[0]['box']
     x2, y2 = x1 + width, y1 + height
+    y1 = y1 if y1 >= 0 else 0
+    y2 = y2 if y2 >= 0 else 0
+    x1 = x1 if x1 >= 0 else 0
+    x2 = x2 if x2 >= 0 else 0
+
+    y1 = y1 if y1 <= img.shape[0] else img.shape[0]
+    y2 = y2 if y2 <= img.shape[0] else img.shape[0]
+    x1 = x1 if x1 <= img.shape[1] else img.shape[1]
+    x2 = x2 if x2 <= img.shape[1] else img.shape[1]
+
     face = img[y1:y2, x1:x2]
     image = Image.fromarray((face).astype(np.uint8))
     image = image.resize(required_size)
@@ -197,9 +210,10 @@ def run_lbp(_path):
     desc = LocalBinaryPatterns(24, 8)
     faces = []
     labels = []
+    pictures = glob.glob(path.join(_path, "*.bmp")).copy()
+    pictures = natsorted(pictures)
 
-    # train
-    for _file in glob.glob(path.join(_path, "*.bmp")):
+    for _file in pictures:
         gray_img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2GRAY)
         hist = desc.describe(gray_img)
 
@@ -218,7 +232,10 @@ def classify_lbp(_path, model):
     hit = 0
     miss = 0
 
-    for _file in glob.glob(path.join(_path+'/test', "*.bmp")):
+    pictures = glob.glob(path.join(_path+'/test', "*.bmp")).copy()
+    pictures = natsorted(pictures)
+
+    for _file in pictures:
         image = cv2.imread(_file)
         gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         hist = desc.describe(gray_img)
@@ -245,8 +262,10 @@ def classify_vgg(_model, _path):
     model = VGGFace(model='resnet50')
     print('Inputs: %s' % model.inputs)
     print('Outputs: %s' % model.outputs)
+    pictures = glob.glob(path.join(_path+'/test', "*.bmp")).copy()
+    pictures = natsorted(pictures)
 
-    for _file in glob.glob(path.join(_path, "*.bmp")):
+    for _file in pictures:
         img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2RGB)
         samples = np.expand_dims(img, axis=0)
         samples = preprocess_input(samples, version=2)
