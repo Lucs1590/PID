@@ -30,7 +30,7 @@ def main():
     _path = '/home/brito/Documentos/Mestrado/PDI/codigos/homework_5'
     # path.abspath(os.getcwd())
     print('INFO: Dataset verify')
-    # load_dataset(_path)
+    load_dataset(_path)
     _path = _path + '/arface'
 
     print('INFO: Run MTCNN')
@@ -66,6 +66,9 @@ def load_dataset(_path):
     if not path.isdir(destination + '/training'):
         os.mkdir(destination + '/training')
         os.mkdir(destination + '/test')
+
+    if not path.isdir(destination + '/training'):
+        os.mkdir(destination + '/lbp-detected')
 
     if not path.isdir(destination + '/face'):
         get_dataset(dataset_file, destination)
@@ -145,6 +148,11 @@ def copy_file(file, destination):
         shutil.copy2(file, destination)
 
 
+def has_files(_path):
+    files = glob.glob(path.join(_path, "*.bmp")).copy()
+    return True if len(files) else False
+
+
 def plot_poits(_image, detected_face):
     if len(detected_face):
         x1, y1, x2, y2 = detected_face[0]['box']
@@ -161,10 +169,17 @@ def plot_poits(_image, detected_face):
 
 def divide_dataset(_path, percentage_train=80, percentage_test=20):
     pictures = glob.glob(path.join(_path + '/mtcnn_detect', "*.bmp")).copy()
+    training_path = _path+'/training'
+    test_path = _path+'/test'
+
     total_images = len(pictures)
 
     percentage_train = (percentage_train/100)
     percentage_test = (percentage_test/100)
+
+    if has_files(training_path):
+        print('Dataset already is divided!')
+        return 0
 
     if percentage_train + percentage_test < 1 \
             or percentage_train + percentage_test > 1:
@@ -173,14 +188,14 @@ def divide_dataset(_path, percentage_train=80, percentage_test=20):
     i = 0
     while i < int(total_images*percentage_train):
         rand_image = random.choice(pictures)
-        copy_file(rand_image, _path+'/training')
+        copy_file(rand_image, training_path)
         pictures.remove(rand_image)
         i += 1
 
     i = 0
     while i < len(pictures):
         rand_image = random.choice(pictures)
-        copy_file(rand_image, _path+'/test')
+        copy_file(rand_image, test_path)
         pictures.remove(rand_image)
         i += 1
 
@@ -214,12 +229,15 @@ def run_lbp(_path):
     pictures = natsorted(pictures)
 
     for _file in pictures:
-        gray_img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2GRAY)
-        hist = desc.describe(gray_img)
+        try:
+            gray_img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2GRAY)
+            hist = desc.describe(gray_img)
 
-        if len(hist) > 0:
-            labels.append(_file.split(os.path.sep)[-1].split('-')[1])
-            faces.append(hist)
+            if len(hist) > 0:
+                labels.append(_file.split(os.path.sep)[-1].split('-')[1])
+                faces.append(hist)
+        except Exception:
+            pass
 
     model = LinearSVC(C=100.0, random_state=42)
     model.fit(faces, labels)
