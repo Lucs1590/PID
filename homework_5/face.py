@@ -21,6 +21,8 @@ from scipy.spatial.distance import cosine
 from keras_vggface.vggface import VGGFace
 from keras_vggface.utils import preprocess_input
 from keras_vggface.utils import decode_predictions
+import tensorflow as tf
+from tensorflow.python.keras.models import Model
 
 """ Main Function """
 
@@ -41,10 +43,10 @@ def main():
     divide_dataset(_path, 80, 20)
 
     print('INFO: Run LBP')
-    (faces_desc_lbp, labels_desc_lbp, model) = run_lbp(_path + '/training')
+    # (faces_desc_lbp, labels_desc_lbp, model) = run_lbp(_path + '/training')
 
     print('INFO: Classifing Images (LBP)')
-    classify_lbp(_path, model)
+    # classify_lbp(_path, model)
 
     print('INFO: Classifing Images (VGGFACE2)')
     classify_vgg('resnet50', _path)
@@ -277,20 +279,42 @@ def classify_lbp(_path, model):
 
 
 def classify_vgg(_model, _path):
-    model = VGGFace(model='resnet50')
-    print('Inputs: %s' % model.inputs)
-    print('Outputs: %s' % model.outputs)
-    pictures = glob.glob(path.join(_path+'/test', "*.bmp")).copy()
+    base_model = VGGFace(model='resnet50', include_top=False)
+    # print('Summary: %s' % base_model.summary())
+    # print('Inputs: %s' % base_model.inputs)
+    # print('Outputs: %s' % base_model.outputs)
+    x = base_model.output
+    x = tf.keras.layers.GlobalAveragePooling2D()(x)
+    # x = Dense(64, activation='elu', name='fc2')(x)
+    # for layer in model.layers[:50]:
+    #     layer.trainable = False
+    # for layer in model.layers[50:]:
+    #     layer.trainable = True
+
+    predictions = tf.keras.layers.Dense(
+        60, activation='softmax', name='predictions')(x)
+    model = Model(base_model.input, predictions)
+
+    for layer in model.layers:
+        layer.trainable = False
+
+    model.compile(loss='categorical_crossentropy', metrics=['accuracy'])
+
+    pictures = glob.glob(path.join(_path+'/training', "*.bmp")).copy()
     pictures = natsorted(pictures)
 
+    faces = []
+    labels = []
+
     for _file in pictures:
-        img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2RGB)
-        samples = np.expand_dims(img, axis=0)
-        samples = preprocess_input(samples, version=2)
-        yhat = model.predict(samples)
-        results = decode_predictions(yhat)
-        for result in results[0]:
-            print('%s: %.3f%%' % (result[0], result[1]*100))
+        try:
+            img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2RGB)
+            labels.append(_file.split(os.path.sep)[-1].split('-')[1])
+            faces.append(img)
+        except Exception:
+            pass
+
+    model.fit(np.array(faces), labels)
 
 
 """ Applying Filters """
