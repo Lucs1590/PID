@@ -21,6 +21,7 @@ from scipy.spatial.distance import cosine
 from keras_vggface.vggface import VGGFace
 from keras_vggface.utils import preprocess_input
 from keras_vggface.utils import decode_predictions
+from keras.utils import to_categorical
 import tensorflow as tf
 from tensorflow.python.keras.models import Model
 
@@ -291,8 +292,7 @@ def classify_vgg(_model, _path):
     # for layer in model.layers[50:]:
     #     layer.trainable = True
 
-    predictions = tf.keras.layers.Dense(
-        60, activation='softmax', name='predictions')(x)
+    predictions = tf.keras.layers.Dense(71, activation='softmax', name='predictions')(x)
     model = Model(base_model.input, predictions)
 
     for layer in model.layers:
@@ -314,7 +314,8 @@ def classify_vgg(_model, _path):
         except Exception:
             pass
 
-    model.fit(np.array(faces), labels)
+    # labels = to_cateorical(labels)
+    model.fit(np.array(faces), np.array(labels))
 
 
 """ Applying Filters """
