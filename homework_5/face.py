@@ -73,8 +73,11 @@ def load_dataset(_path):
         os.mkdir(destination + '/training')
         os.mkdir(destination + '/test')
 
-    if not path.isdir(destination + '/training'):
+    if not path.isdir(destination + '/lbp-detected'):
         os.mkdir(destination + '/lbp-detected')
+
+    if not path.isdir(destination + '/vgg-detected'):
+        os.mkdir(destination + '/vgg-detected')
 
     if not path.isdir(destination + '/face'):
         get_dataset(dataset_file, destination)
@@ -270,7 +273,6 @@ def classify_lbp(_path, model):
         else:
             miss += 1
 
-        # display the image and the prediction
         cv2.putText(image, prediction[0], (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
                     1.0, (0, 0, 255), 3)
         cv2.imwrite(_path+'/lbp-detected/'+_file.split(os.path.sep)[-1], image)
@@ -327,7 +329,28 @@ def define_vgg_model(_model):
 
 
 def classify_vgg(_path, model):
-    pass
+    hit = 0
+    miss = 0
+
+    pictures = glob.glob(path.join(_path+'/test', "*.bmp")).copy()
+    pictures = natsorted(pictures)
+
+    for _file in pictures:
+        image = cv2.imread(_file)
+        rgb_img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        prediction = model.predict(rgb_img)
+
+        if prediction[0] == _file.split(os.path.sep)[-1].split('-')[1]:
+            hit += 1
+        else:
+            miss += 1
+
+        cv2.putText(image, prediction[0], (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                    1.0, (0, 0, 255), 3)
+        cv2.imwrite(_path+'/vgg-detected/'+_file.split(os.path.sep)[-1], image)
+        cv2.waitKey(0)
+
+    return hit, miss
 
 
 """ Applying Filters """
