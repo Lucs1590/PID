@@ -49,8 +49,11 @@ def main():
     print('INFO: Classifing Images (LBP)')
     # classify_lbp(_path, lbp_model)
 
+    print('INFO: Run VGGFACE')
+    (faces_desc_vgg, labels_desc_vgg, vgg_model) = run_vgg('resnet50', _path)
+
     print('INFO: Classifing Images (VGGFACE2)')
-    run_vgg('resnet50', _path)
+    classify_vgg(_path, vgg_model)
 
 
 """ Download Dataset """
@@ -298,7 +301,7 @@ def run_vgg(_model, _path):
 
     encoded_labels = OneHotEncoder().fit_transform(
         np.array(labels).reshape(-1, 1)).toarray()
-    model.fit(np.array(faces), encoded_labels)
+    model.fit(np.array(faces), encoded_labels, epochs=5)
 
     return faces, labels, model
 
@@ -321,6 +324,10 @@ def define_vgg_model(_model):
     model.compile(loss='categorical_crossentropy', metrics=['accuracy'])
 
     return model
+
+
+def classify_vgg(_path, model):
+    pass
 
 
 """ Applying Filters """
