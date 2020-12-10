@@ -21,7 +21,7 @@ from scipy.spatial.distance import cosine
 from keras_vggface.vggface import VGGFace
 from keras_vggface.utils import preprocess_input
 from keras_vggface.utils import decode_predictions
-from keras.utils import to_categorical
+from sklearn.preprocessing import OneHotEncoder
 import tensorflow as tf
 from tensorflow.python.keras.models import Model
 
@@ -44,13 +44,13 @@ def main():
     divide_dataset(_path, 80, 20)
 
     print('INFO: Run LBP')
-    # (faces_desc_lbp, labels_desc_lbp, model) = run_lbp(_path + '/training')
+    # (faces_desc_lbp, labels_desc_lbp, lbp_model) = run_lbp(_path + '/training')
 
     print('INFO: Classifing Images (LBP)')
-    # classify_lbp(_path, model)
+    # classify_lbp(_path, lbp_model)
 
     print('INFO: Classifing Images (VGGFACE2)')
-    classify_vgg('resnet50', _path)
+    run_vgg('resnet50', _path)
 
 
 """ Download Dataset """
@@ -279,26 +279,8 @@ def classify_lbp(_path, model):
 """ VGGFACE """
 
 
-def classify_vgg(_model, _path):
-    base_model = VGGFace(model='resnet50', include_top=False)
-    # print('Summary: %s' % base_model.summary())
-    # print('Inputs: %s' % base_model.inputs)
-    # print('Outputs: %s' % base_model.outputs)
-    x = base_model.output
-    x = tf.keras.layers.GlobalAveragePooling2D()(x)
-    # x = Dense(64, activation='elu', name='fc2')(x)
-    # for layer in model.layers[:50]:
-    #     layer.trainable = False
-    # for layer in model.layers[50:]:
-    #     layer.trainable = True
-
-    predictions = tf.keras.layers.Dense(71, activation='softmax', name='predictions')(x)
-    model = Model(base_model.input, predictions)
-
-    for layer in model.layers:
-        layer.trainable = False
-
-    model.compile(loss='categorical_crossentropy', metrics=['accuracy'])
+def run_vgg(_model, _path):
+    model = define_vgg_model(_model)
 
     pictures = glob.glob(path.join(_path+'/training', "*.bmp")).copy()
     pictures = natsorted(pictures)
@@ -314,8 +296,31 @@ def classify_vgg(_model, _path):
         except Exception:
             pass
 
-    # labels = to_cateorical(labels)
-    model.fit(np.array(faces), np.array(labels))
+    encoded_labels = OneHotEncoder().fit_transform(
+        np.array(labels).reshape(-1, 1)).toarray()
+    model.fit(np.array(faces), encoded_labels)
+
+    return faces, labels, model
+
+
+def define_vgg_model(_model):
+    base_model = VGGFace(model='resnet50', include_top=False)
+    x = base_model.output
+    x = tf.keras.layers.GlobalAveragePooling2D()(x)
+    x = tf.keras.layers.Dense(128, activation='elu', name='fc1')(x)
+    x = tf.keras.layers.Dense(64, activation='elu', name='fc2')(x)
+    x = tf.keras.layers.Dropout(0.2)(x)
+
+    predictions = tf.keras.layers.Dense(
+        71, activation='softmax', name='predictions')(x)
+    model = Model(base_model.input, predictions)
+
+    for layer in model.layers:
+        layer.trainable = False
+
+    model.compile(loss='categorical_crossentropy', metrics=['accuracy'])
+
+    return model
 
 
 """ Applying Filters """
