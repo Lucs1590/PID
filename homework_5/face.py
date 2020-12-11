@@ -121,6 +121,7 @@ def detect_faces_mtcnn(_path, destination):
         img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2RGB)
         detected_face = MTCNN().detect_faces(img)
         if detected_face:
+            # cv2.imwrite('/home/brito/Documentos/Mestrado/PDI/codigos/homework_5/4.bmp', cv2.cvtColor(plot_poits(img, detected_face), cv2.COLOR_RGB2BGR))
             labels.append(_file.split(os.path.sep)[-1].split('-')[1])
             faces.append(detected_face)
             save_file(detected_face, img, destination,
