@@ -8,6 +8,7 @@ import zipfile
 import shutil
 
 import numpy as np
+import tensorflow as tf
 
 from os import path
 from matplotlib import pyplot as plt
@@ -22,7 +23,6 @@ from keras_vggface.vggface import VGGFace
 from keras_vggface.utils import preprocess_input
 from keras_vggface.utils import decode_predictions
 from sklearn.preprocessing import OneHotEncoder
-import tensorflow as tf
 from tensorflow.python.keras.models import Model
 
 """ Main Function """
@@ -53,7 +53,7 @@ def main():
     (faces_desc_vgg, labels_desc_vgg, vgg_model) = run_vgg('resnet50', _path)
 
     print('INFO: Classifing Images (VGGFACE2)')
-    classify_vgg(_path, vgg_model)
+    classify_vgg(_path, vgg_model, labels_desc_vgg)
 
 
 """ Download Dataset """
@@ -328,25 +328,36 @@ def define_vgg_model(_model):
     return model
 
 
-def classify_vgg(_path, model):
+def classify_vgg(_path, model, labels):
     hit = 0
     miss = 0
 
     pictures = glob.glob(path.join(_path+'/test', "*.bmp")).copy()
     pictures = natsorted(pictures)
 
+    encoder = OneHotEncoder()
+    encoded_labels = encoder.fit_transform(
+        np.array(labels).reshape(-1, 1)).toarray()
+    encoder.fit_transform(np.array(labels).reshape(-1, 1))
+    labels = encoder.inverse_transform(encoded_labels)
+
     for _file in pictures:
         image = cv2.imread(_file)
-        rgb_img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        prediction = model.predict(rgb_img)
+        rgb_img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB).astype('float32')
+        samples = np.expand_dims(rgb_img, axis=0)
+        samples = preprocess_input(samples, version=2)
+        prediction = model.predict(samples)
 
-        if prediction[0] == _file.split(os.path.sep)[-1].split('-')[1]:
+        idx_best_prediction = np.argmax(prediction[0])
+        best_prediction = labels[idx_best_prediction][0]
+
+        if best_prediction == _file.split(os.path.sep)[-1].split('-')[1]:
             hit += 1
         else:
             miss += 1
 
-        cv2.putText(image, prediction[0], (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                    1.0, (0, 0, 255), 3)
+        cv2.putText(image, best_prediction, (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255), 3)
         cv2.imwrite(_path+'/vgg-detected/'+_file.split(os.path.sep)[-1], image)
         cv2.waitKey(0)
 
