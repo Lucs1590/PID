@@ -44,10 +44,10 @@ def main():
     divide_dataset(_path, 80, 20)
 
     print('INFO: Run LBP')
-    # (faces_desc_lbp, labels_desc_lbp, lbp_model) = run_lbp(_path + '/training')
+    (faces_desc_lbp, labels_desc_lbp, lbp_model) = run_lbp(_path + '/training')
 
     print('INFO: Classifing Images (LBP)')
-    # classify_lbp(_path, lbp_model)
+    classify_lbp(_path, lbp_model)
 
     print('INFO: Run VGGFACE')
     (faces_desc_vgg, labels_desc_vgg, vgg_model) = run_vgg('resnet50', _path)
@@ -127,8 +127,9 @@ def detect_faces_mtcnn(_path, destination):
             save_file(detected_face, img, destination,
                       _file.split(os.path.sep)[-1])
 
-    detected = list(map(lambda aqv: aqv.split(
-        os.path.sep)[-1].split('-')[-1].split('_')[0], glob.glob(path.join(destination, "*.bmp"))))
+    detected = list(map(lambda aqv: ''.join(aqv.split(os.path.sep)[-1].split(
+        '-')[::2]).split('_')[0], glob.glob(path.join(destination, "*.bmp"))))
+
     count_detected = {i: detected.count(i) for i in detected}
     print('INFO:', count_detected)
     return faces, labels
@@ -318,7 +319,7 @@ def define_vgg_model(_model):
     x = tf.keras.layers.Dropout(0.2)(x)
 
     predictions = tf.keras.layers.Dense(
-        71, activation='softmax', name='predictions')(x)
+        136, activation='softmax', name='predictions')(x)
     model = Model(base_model.input, predictions)
 
     for layer in model.layers:
