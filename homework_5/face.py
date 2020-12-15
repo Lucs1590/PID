@@ -234,7 +234,7 @@ class LocalBinaryPatterns:
 
 
 def run_lbp(_path):
-    desc = LocalBinaryPatterns(24, 8)
+    desc = LocalBinaryPatterns(40, 8)
     faces = []
     labels = []
     pictures = glob.glob(path.join(_path, "*.bmp")).copy()
@@ -259,7 +259,7 @@ def run_lbp(_path):
 
 
 def classify_lbp(_path, model):
-    desc = LocalBinaryPatterns(24, 8)
+    desc = LocalBinaryPatterns(40, 8)
     hit = 0
     miss = 0
 
