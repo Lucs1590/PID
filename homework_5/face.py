@@ -24,6 +24,7 @@ from keras_vggface.utils import preprocess_input
 from keras_vggface.utils import decode_predictions
 from sklearn.preprocessing import OneHotEncoder
 from tensorflow.python.keras.models import Model
+from scipy.spatial.distance import cosine
 
 """ Main Function """
 
@@ -44,16 +45,19 @@ def main():
     divide_dataset(_path, 80, 20)
 
     print('INFO: Run LBP')
-    (faces_desc_lbp, labels_desc_lbp, lbp_model) = run_lbp(_path + '/training')
+    # (faces_desc_lbp, labels_desc_lbp, lbp_model) = run_lbp(_path + '/training')
 
     print('INFO: Classifing Images (LBP)')
-    classify_lbp(_path, lbp_model)
+    # classify_lbp(_path, lbp_model)
 
     print('INFO: Run VGGFACE')
     (faces_desc_vgg, labels_desc_vgg, vgg_model) = run_vgg('resnet50', _path)
 
     print('INFO: Classifing Images (VGGFACE2)')
-    classify_vgg(_path, vgg_model, labels_desc_vgg)
+    # classify_vgg(_path, vgg_model, labels_desc_vgg)
+
+    print('INFO: Compare images')
+    compare_images(_path, vgg_model)
 
 
 """ Download Dataset """
@@ -367,6 +371,33 @@ def classify_vgg(_path, model, labels):
         cv2.waitKey(0)
 
     return hit, miss
+
+
+def compare_images(_path, model):
+    pictures = glob.glob(path.join(_path + '/mtcnn_detect', "*.bmp")).copy()
+    rand_image1 = cv2.cvtColor(cv2.imread(random.choice(
+        pictures)), cv2.COLOR_BGR2RGB).astype('float32')
+    rand_image2 = cv2.cvtColor(cv2.imread(random.choice(
+        pictures)), cv2.COLOR_BGR2RGB).astype('float32')
+
+    sample1 = np.expand_dims(rand_image1, axis=0)
+    sample1 = preprocess_input(sample1, version=2)
+
+    sample2 = np.expand_dims(rand_image2, axis=0)
+    sample2 = preprocess_input(sample2, version=2)
+
+    prediction1 = model.predict(sample1)
+    prediction2 = model.predict(sample2)
+
+    is_match(prediction1, prediction2)
+
+
+def is_match(known_embedding, candidate_embedding, thresh=0.5):
+    score = cosine(known_embedding, candidate_embedding)
+    if score <= thresh:
+        print('>face is a Match (%.3f <= %.3f)' % (score, thresh))
+    else:
+        print('>face is NOT a Match (%.3f > %.3f)' % (score, thresh))
 
 
 """ Applying Filters """
