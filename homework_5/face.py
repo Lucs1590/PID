@@ -314,8 +314,8 @@ def define_vgg_model(_model):
     base_model = VGGFace(model='resnet50', include_top=False)
     x = base_model.output
     x = tf.keras.layers.GlobalAveragePooling2D()(x)
-    x = tf.keras.layers.Dense(128, activation='elu', name='fc1')(x)
-    x = tf.keras.layers.Dense(64, activation='elu', name='fc2')(x)
+    x = tf.keras.layers.Dense(256, activation='elu', name='fc1')(x)
+    x = tf.keras.layers.Dense(196, activation='elu', name='fc2')(x)
     x = tf.keras.layers.Dropout(0.2)(x)
 
     predictions = tf.keras.layers.Dense(
