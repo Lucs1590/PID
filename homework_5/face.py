@@ -122,7 +122,8 @@ def detect_faces_mtcnn(_path, destination):
         detected_face = MTCNN().detect_faces(img)
         if detected_face:
             # cv2.imwrite('/home/brito/Documentos/Mestrado/PDI/codigos/homework_5/4.bmp', cv2.cvtColor(plot_poits(img, detected_face), cv2.COLOR_RGB2BGR))
-            labels.append(_file.split(os.path.sep)[-1].split('-')[1])
+            labels.append(
+                ''.join(_file.split(os.path.sep)[-1].split('-')[0:2]))
             faces.append(detected_face)
             save_file(detected_face, img, destination,
                       _file.split(os.path.sep)[-1])
@@ -245,7 +246,8 @@ def run_lbp(_path):
             hist = desc.describe(gray_img)
 
             if len(hist) > 0:
-                labels.append(_file.split(os.path.sep)[-1].split('-')[1])
+                labels.append(
+                    ''.join(_file.split(os.path.sep)[-1].split('-')[0:2]))
                 faces.append(hist)
         except Exception:
             pass
@@ -270,7 +272,7 @@ def classify_lbp(_path, model):
         hist = desc.describe(gray_img)
         prediction = model.predict(hist.reshape(1, -1))
 
-        if prediction[0] == _file.split(os.path.sep)[-1].split('-')[1]:
+        if prediction[0] == ''.join(_file.split(os.path.sep)[-1].split('-')[0:2]):
             hit += 1
         else:
             miss += 1
@@ -298,7 +300,8 @@ def run_vgg(_model, _path):
     for _file in pictures:
         try:
             img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2RGB)
-            labels.append(_file.split(os.path.sep)[-1].split('-')[1])
+            labels.append(
+                ''.join(_file.split(os.path.sep)[-1].split('-')[0:2]))
             faces.append(img)
         except Exception:
             pass
@@ -353,7 +356,7 @@ def classify_vgg(_path, model, labels):
         idx_best_prediction = np.argmax(prediction[0])
         best_prediction = labels[idx_best_prediction][0]
 
-        if best_prediction == _file.split(os.path.sep)[-1].split('-')[1]:
+        if best_prediction == ''.join(_file.split(os.path.sep)[-1].split('-')[0:2]):
             hit += 1
         else:
             miss += 1
