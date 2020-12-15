@@ -82,6 +82,9 @@ def load_dataset(_path):
     if not path.isdir(destination + '/vgg-detected'):
         os.mkdir(destination + '/vgg-detected')
 
+    if not path.isdir(destination + '/equilized'):
+        os.mkdir(destination + '/equilized')
+
     if not path.isdir(destination + '/face'):
         get_dataset(dataset_file, destination)
     elif path.isfile(dataset_file):
@@ -283,7 +286,6 @@ def classify_lbp(_path, model):
         cv2.putText(image, prediction[0], (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
                     1.0, (0, 0, 255), 3)
         cv2.imwrite(_path+'/lbp-detected/'+_file.split(os.path.sep)[-1], image)
-        cv2.waitKey(0)
 
     return hit, miss
 
@@ -405,6 +407,19 @@ def is_match(known_embedding, candidate_embedding, thresh=0.5):
 
 
 """ Applying Filters """
+
+
+def histogram_equalization(_path):
+    pictures = glob.glob(path.join(_path, "*.bmp")).copy()
+    pictures = natsorted(pictures)
+
+    for _file in pictures:
+        img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2HSV)
+        img[:, :, 2] = cv2.equalizeHist(img[:, :, 2])
+        image = cv2.cvtColor(img, cv2.COLOR_HSV2RGB)
+
+        cv2.imwrite(_path+'/equilized/'+_file.split(os.path.sep)[-1], image)
+
 
 if __name__ == "__main__":
     main()
