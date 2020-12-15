@@ -24,7 +24,6 @@ from keras_vggface.utils import preprocess_input
 from keras_vggface.utils import decode_predictions
 from sklearn.preprocessing import OneHotEncoder
 from tensorflow.python.keras.models import Model
-from scipy.spatial.distance import cosine
 
 """ Main Function """
 
@@ -375,10 +374,15 @@ def classify_vgg(_path, model, labels):
 
 def compare_images(_path, model):
     pictures = glob.glob(path.join(_path + '/mtcnn_detect', "*.bmp")).copy()
-    rand_image1 = cv2.cvtColor(cv2.imread(random.choice(
-        pictures)), cv2.COLOR_BGR2RGB).astype('float32')
-    rand_image2 = cv2.cvtColor(cv2.imread(random.choice(
-        pictures)), cv2.COLOR_BGR2RGB).astype('float32')
+    pic1 = random.choice(pictures)
+    print(pic1)
+    pic2 = random.choice(pictures)
+    print(pic2)
+
+    rand_image1 = cv2.cvtColor(cv2.imread(
+        pic1), cv2.COLOR_BGR2RGB).astype('float32')
+    rand_image2 = cv2.cvtColor(cv2.imread(
+        pic2), cv2.COLOR_BGR2RGB).astype('float32')
 
     sample1 = np.expand_dims(rand_image1, axis=0)
     sample1 = preprocess_input(sample1, version=2)
