@@ -375,9 +375,9 @@ def classify_vgg(_path, model, labels):
 def compare_images(_path, model):
     pictures = glob.glob(path.join(_path + '/mtcnn_detect', "*.bmp")).copy()
     pic1 = random.choice(pictures)
-    print(pic1)
+    print(pic1.split(os.path.sep)[-1])
     pic2 = random.choice(pictures)
-    print(pic2)
+    print(pic2.split(os.path.sep)[-1])
 
     rand_image1 = cv2.cvtColor(cv2.imread(
         pic1), cv2.COLOR_BGR2RGB).astype('float32')
