@@ -322,7 +322,7 @@ def define_vgg_model(_model):
     x = tf.keras.layers.Dropout(0.2)(x)
 
     predictions = tf.keras.layers.Dense(
-        136, activation='softmax', name='predictions')(x)
+        135, activation='softmax', name='predictions')(x)
     model = Model(base_model.input, predictions)
 
     for layer in model.layers:
