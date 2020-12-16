@@ -40,23 +40,23 @@ def main():
     # (faces_desc_mtcnn, labels_desc_mtcnn) = detect_faces_mtcnn(
     #    _path + '/face', _path + '/mtcnn_detect')
 
-    print('INFO: Divide dataset')
+    print('INFO: Divide dataset (FACE)')
     divide_dataset(_path, 80, 20)
 
-    print('INFO: Run LBP')
+    print('INFO: Run LBP (FACE)')
     # (faces_desc_lbp, labels_desc_lbp, lbp_model) = run_lbp(_path + '/training')
 
-    print('INFO: Classifing Images (LBP)')
+    print('INFO: Classifing Images (LBP - FACE)')
     # classify_lbp(_path, lbp_model)
 
-    print('INFO: Run VGGFACE')
+    print('INFO: Run VGGFACE (FACE)')
     (faces_desc_vgg, labels_desc_vgg, vgg_model) = run_vgg('resnet50', _path)
 
-    print('INFO: Classifing Images (VGGFACE2)')
+    print('INFO: Classifing Images (VGGFACE2 - FACE)')
     # classify_vgg(_path, vgg_model, labels_desc_vgg)
 
-    print('INFO: Compare images')
-    compare_images(_path, vgg_model)
+    # print('INFO: Compare images')
+    # compare_images(_path, vgg_model)
 
 
 """ Download Dataset """
