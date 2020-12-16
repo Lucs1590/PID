@@ -37,20 +37,21 @@ def main():
     _path1 = _path + '/arface'
     _path2 = _path + '/ocular'
 
-    print('INFO: Run MTCNN')
-    standardize_images([_path + '/left', _path + '/right'], _path + '/default_detect')
+    print('INFO: Standardize Images')
+    standardize_images([_path1 + '/left', _path1 + '/right'],
+                       _path2 + '/default_detect')
 
     print('INFO: Divide dataset (OCULAR)')
-    divide_dataset(_path, 80, 20)
+    divide_dataset(_path2, 80, 20)
 
     print('INFO: Run LBP (OCULAR)')
-    # (faces_desc_lbp, labels_desc_lbp, lbp_model) = run_lbp(_path + '/training')
+    (oc_regions_desc_lbp, labels_desc_lbp, lbp_model) = run_lbp(_path2 + '/training')
 
     print('INFO: Classifing Images (LBP - OCULAR)')
-    # classify_lbp(_path, lbp_model)
+    classify_lbp(_path, lbp_model)
 
     print('INFO: Run VGGFACE (OCULAR)')
-    (faces_desc_vgg, labels_desc_vgg, vgg_model) = run_vgg('resnet50', _path)
+    (oc_regions_desc_vgg, labels_desc_vgg, vgg_model) = run_vgg('resnet50', _path)
 
     print('INFO: Classifing Images (VGGFACE2 - OCULAR)')
     classify_vgg(_path, vgg_model, labels_desc_vgg)
@@ -118,49 +119,26 @@ def unzip_file(_file, destination):
     os.remove(_file)
 
 
-""" Detect Faces """
+""" Detect oc_regions """
 
 
-def standardize_images(_path, destination):
-    faces = []
-    labels = []
-    pictures = glob.glob(path.join(_path, "*.bmp")).copy()
-    pictures = natsorted(pictures)
+def standardize_images(_paths, destination):
+    if has_files(destination):
+        print('Dataset is already standardized!')
+        return 0
 
-    for _file in pictures:
-        img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2RGB)
-        detected_face = MTCNN().detect_faces(img)
-        if detected_face:
-            # cv2.imwrite('/home/brito/Documentos/Mestrado/PDI/codigos/homework_5/4.bmp', cv2.cvtColor(plot_poits(img, detected_face), cv2.COLOR_RGB2BGR))
-            labels.append(
-                ''.join(_file.split(os.path.sep)[-1].split('-')[0:2]))
-            faces.append(detected_face)
-            save_file(detected_face, img, destination,
-                      _file.split(os.path.sep)[-1])
+    for _path in _paths:
+        pictures = glob.glob(path.join(_path, "*.bmp")).copy()
+        pictures = natsorted(pictures)
 
-    detected = list(map(lambda aqv: ''.join(aqv.split(os.path.sep)[-1].split(
-        '-')[::2]).split('_')[0], glob.glob(path.join(destination, "*.bmp"))))
-
-    count_detected = {i: detected.count(i) for i in detected}
-    print('INFO:', count_detected)
-    return faces, labels
+        for _file in pictures:
+            img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2RGB)
+            # mudar nome do arquivo
+            save_file(img, destination, _file.split(os.path.sep)[-1])
 
 
-def save_file(detected_face, img, destination, file_name, required_size=(224, 224)):
-    x1, y1, width, height = detected_face[0]['box']
-    x2, y2 = x1 + width, y1 + height
-    y1 = y1 if y1 >= 0 else 0
-    y2 = y2 if y2 >= 0 else 0
-    x1 = x1 if x1 >= 0 else 0
-    x2 = x2 if x2 >= 0 else 0
-
-    y1 = y1 if y1 <= img.shape[0] else img.shape[0]
-    y2 = y2 if y2 <= img.shape[0] else img.shape[0]
-    x1 = x1 if x1 <= img.shape[1] else img.shape[1]
-    x2 = x2 if x2 <= img.shape[1] else img.shape[1]
-
-    face = img[y1:y2, x1:x2]
-    image = Image.fromarray((face).astype(np.uint8))
+def save_file(img, destination, file_name, required_size=(224, 224)):
+    image = Image.fromarray((img).astype(np.uint8))
     image = image.resize(required_size)
     image.save(destination+os.path.sep+file_name)
 
@@ -190,7 +168,7 @@ def plot_poits(_image, detected_face):
 
 
 def divide_dataset(_path, percentage_train=80, percentage_test=20):
-    pictures = glob.glob(path.join(_path + '/mtcnn_detect', "*.bmp")).copy()
+    pictures = glob.glob(path.join(_path + '/default_detect', "*.bmp")).copy()
     training_path = _path+'/training'
     test_path = _path+'/test'
 
@@ -245,7 +223,7 @@ class LocalBinaryPatterns:
 
 def run_lbp(_path):
     desc = LocalBinaryPatterns(40, 8)
-    faces = []
+    oc_regions = []
     labels = []
     pictures = glob.glob(path.join(_path, "*.bmp")).copy()
     pictures = natsorted(pictures)
@@ -258,14 +236,14 @@ def run_lbp(_path):
             if len(hist) > 0:
                 labels.append(
                     ''.join(_file.split(os.path.sep)[-1].split('-')[0:2]))
-                faces.append(hist)
+                oc_regions.append(hist)
         except Exception:
             pass
 
     model = LinearSVC(C=100.0, random_state=42)
-    model.fit(faces, labels)
+    model.fit(oc_regions, labels)
 
-    return faces, labels, model
+    return oc_regions, labels, model
 
 
 def classify_lbp(_path, model):
@@ -303,7 +281,7 @@ def run_vgg(_model, _path):
     pictures = glob.glob(path.join(_path+'/training', "*.bmp")).copy()
     pictures = natsorted(pictures)
 
-    faces = []
+    oc_regions = []
     labels = []
 
     for _file in pictures:
@@ -311,15 +289,15 @@ def run_vgg(_model, _path):
             img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2RGB)
             labels.append(
                 ''.join(_file.split(os.path.sep)[-1].split('-')[0:2]))
-            faces.append(img)
+            oc_regions.append(img)
         except Exception:
             pass
 
     encoded_labels = OneHotEncoder().fit_transform(
         np.array(labels).reshape(-1, 1)).toarray()
-    model.fit(np.array(faces), encoded_labels, epochs=5)
+    model.fit(np.array(oc_regions), encoded_labels, epochs=5)
 
-    return faces, labels, model
+    return oc_regions, labels, model
 
 
 def define_vgg_model(_model):
@@ -379,7 +357,7 @@ def classify_vgg(_path, model, labels):
 
 
 def compare_images(_path, model):
-    pictures = glob.glob(path.join(_path + '/mtcnn_detect', "*.bmp")).copy()
+    pictures = glob.glob(path.join(_path + '/default_detect', "*.bmp")).copy()
     pic1 = random.choice(pictures)
     print(pic1.split(os.path.sep)[-1])
     pic2 = random.choice(pictures)
