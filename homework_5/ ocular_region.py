@@ -33,12 +33,12 @@ def main():
     _path = '/home/brito/Documentos/Mestrado/PDI/codigos/homework_5'
     # path.abspath(os.getcwd())
     print('INFO: Dataset verify')
-    load_dataset(_path)
+    load_dataset_ocular(_path)
     _path1 = _path + '/arface'
     _path2 = _path + '/ocular'
 
     print('INFO: Standardize Images')
-    standardize_images([_path1 + '/left', _path1 + '/right'],
+    standardize_images_ocular([_path1 + '/left', _path1 + '/right'],
                        _path2 + '/default_detect')
 
     print('INFO: Divide dataset (OCULAR)')
@@ -48,13 +48,13 @@ def main():
     (oc_regions_desc_lbp, labels_desc_lbp, lbp_model) = run_lbp(_path2 + '/training')
 
     print('INFO: Classifing Images (LBP - OCULAR)')
-    classify_lbp(_path, lbp_model)
+    classify_lbp(_path2, lbp_model)
 
     print('INFO: Run VGGFACE (OCULAR)')
-    (oc_regions_desc_vgg, labels_desc_vgg, vgg_model) = run_vgg('resnet50', _path)
+    (oc_regions_desc_vgg, labels_desc_vgg, vgg_model) = run_vgg('resnet50', _path2)
 
     print('INFO: Classifing Images (VGGFACE2 - OCULAR)')
-    classify_vgg(_path, vgg_model, labels_desc_vgg)
+    classify_vgg(_path2, vgg_model, labels_desc_vgg)
 
     # print('INFO: Compare images')
     # compare_images(_path, vgg_model)
@@ -63,7 +63,7 @@ def main():
 """ Download Dataset """
 
 
-def load_dataset(_path):
+def load_dataset_ocular(_path):
     destination_1 = _path + '/ocular'
     destination = _path + '/arface'
     dataset_file = destination + '/arface.zip'
@@ -122,7 +122,7 @@ def unzip_file(_file, destination):
 """ Detect oc_regions """
 
 
-def standardize_images(_paths, destination):
+def standardize_images_ocular(_paths, destination):
     if has_files(destination):
         print('Dataset is already standardized!')
         return 0
@@ -134,10 +134,10 @@ def standardize_images(_paths, destination):
         for _file in pictures:
             img = cv2.cvtColor(cv2.imread(_file), cv2.COLOR_BGR2RGB)
             # mudar nome do arquivo
-            save_file(img, destination, _file.split(os.path.sep)[-1])
+            save_file_ocular(img, destination, _file.split(os.path.sep)[-1])
 
 
-def save_file(img, destination, file_name, required_size=(224, 224)):
+def save_file_ocular(img, destination, file_name, required_size=(224, 224)):
     image = Image.fromarray((img).astype(np.uint8))
     image = image.resize(required_size)
     image.save(destination+os.path.sep+file_name)
