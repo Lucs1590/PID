@@ -470,8 +470,8 @@ def compute_precision_recall(label, score):
 
 def calcule_f1(predicted, true):
     f1_value = f1_score(true, predicted, average='macro')
-    print('F1 Score: ', f1_score)
-    return f1_score
+    print('F1 Score: ', f1_value)
+    return f1_value
 
 
 def making_cmc(values):
