@@ -44,7 +44,7 @@ def main():
     #    _path + '/face', _path + '/mtcnn_detect')
 
     print('INFO: Divide dataset (FACE)')
-    divide_dataset(_path, 80, 20)
+    divide_dataset(_path, _path + '/mtcnn_detect', 80, 20)
 
     print('INFO: Run LBP (FACE)')
     # (faces_desc_lbp, labels_desc_lbp, lbp_model) = run_lbp(_path + '/training')
@@ -56,7 +56,7 @@ def main():
     (faces_desc_vgg, labels_desc_vgg, vgg_model) = run_vgg('resnet50', _path)
 
     print('INFO: Classifing Images (VGGFACE2 - FACE)')
-    # classify_vgg(_path, vgg_model, labels_desc_vgg)
+    classify_vgg(_path, vgg_model, labels_desc_vgg)
 
     # print('INFO: Compare images')
     # compare_images(_path, vgg_model)
@@ -85,11 +85,12 @@ def load_dataset(_path):
     if not path.isdir(destination + '/vgg-detected'):
         os.mkdir(destination + '/vgg-detected')
 
-    if not path.isdir(destination + '/equilized'):
-        os.mkdir(destination + '/equilized')
+    if not path.isdir(destination + '/equalized'):
+        os.mkdir(destination + '/equalized')
 
     if not path.isdir(destination + '/face'):
-        get_dataset(dataset_file, destination)
+        get_dataset(dataset_file, destination,
+                    'https://drive.google.com/u/2/uc?export=download&confirm=HiLF&id=1BQuEQfmMiA_cEYmvkQDCnYAJd_TT3rCk')
     elif path.isfile(dataset_file):
         unzip_file(dataset_file, destination)
     else:
@@ -188,8 +189,8 @@ def plot_poits(_image, detected_face):
 """ Divide Dataset """
 
 
-def divide_dataset(_path, percentage_train=80, percentage_test=20):
-    pictures = glob.glob(path.join(_path + '/mtcnn_detect', "*.bmp")).copy()
+def divide_dataset(_path, _path_destination, percentage_train=80, percentage_test=20):
+    pictures = glob.glob(path.join(_path_destination, "*.bmp")).copy()
     training_path = _path+'/training'
     test_path = _path+'/test'
 
@@ -297,8 +298,8 @@ def classify_lbp(_path, model):
         label_list.append(correct_class)
 
     data = np.array(hist_list).squeeze()
-    score = model.decision_function(hist_list)
-    compute_precision_recall(label_list, score, model)
+    score = model.decision_function(data)
+    compute_precision_recall(label_list, score)
     return hit, miss
 
 
@@ -306,8 +307,6 @@ def classify_lbp(_path, model):
 
 
 def run_vgg(_model, _path):
-    model = define_vgg_model(_model)
-
     pictures = glob.glob(path.join(_path+'/training', "*.bmp")).copy()
     pictures = natsorted(pictures)
 
@@ -325,12 +324,14 @@ def run_vgg(_model, _path):
 
     encoded_labels = OneHotEncoder().fit_transform(
         np.array(labels).reshape(-1, 1)).toarray()
+
+    model = define_vgg_model(_model, len(np.unique(np.array(labels))))
     model.fit(np.array(faces), encoded_labels, epochs=5)
 
     return faces, labels, model
 
 
-def define_vgg_model(_model):
+def define_vgg_model(_mode, num_class):
     base_model = VGGFace(model='resnet50', include_top=False)
     x = base_model.output
     x = tf.keras.layers.GlobalAveragePooling2D()(x)
@@ -339,7 +340,7 @@ def define_vgg_model(_model):
     x = tf.keras.layers.Dropout(0.2)(x)
 
     predictions = tf.keras.layers.Dense(
-        135, activation='softmax', name='predictions')(x)
+        num_class, activation='softmax', name='predictions')(x)
     model = Model(base_model.input, predictions)
 
     for layer in model.layers:
@@ -353,6 +354,8 @@ def define_vgg_model(_model):
 def classify_vgg(_path, model, labels):
     hit = 0
     miss = 0
+    label_list = []
+    score_list = []
 
     pictures = glob.glob(path.join(_path+'/test', "*.bmp")).copy()
     pictures = natsorted(pictures)
@@ -369,11 +372,12 @@ def classify_vgg(_path, model, labels):
         samples = np.expand_dims(rgb_img, axis=0)
         samples = preprocess_input(samples, version=2)
         prediction = model.predict(samples)
+        correct_class = ''.join(_file.split(os.path.sep)[-1].split('-')[0:2])
 
         idx_best_prediction = np.argmax(prediction[0])
         best_prediction = labels[idx_best_prediction][0]
 
-        if best_prediction == ''.join(_file.split(os.path.sep)[-1].split('-')[0:2]):
+        if best_prediction == correct_class:
             hit += 1
         else:
             miss += 1
@@ -381,7 +385,11 @@ def classify_vgg(_path, model, labels):
         cv2.putText(image, best_prediction, (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255), 3)
         cv2.imwrite(_path+'/vgg-detected/'+_file.split(os.path.sep)[-1], image)
-        cv2.waitKey(0)
+
+        label_list.append(correct_class)
+        score_list.append(prediction)
+
+    compute_precision_recall(label_list, np.array(score_list).squeeze())
 
     return hit, miss
 
@@ -421,7 +429,7 @@ def is_match(known_embedding, candidate_embedding, thresh=0.5):
 """ Metrics """
 
 
-def compute_precision_recall(label, score, model):
+def compute_precision_recall(label, score):
     Y = OneHotEncoder().fit_transform(np.array(label).reshape(-1, 1)).toarray()
 
     precision = dict()
