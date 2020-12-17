@@ -28,6 +28,8 @@ from tensorflow.python.keras.models import Model
 """ Metrics import """
 from sklearn.metrics import average_precision_score
 from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import f1_score
+from CMC import CMC
 """ Main Function """
 
 
@@ -40,17 +42,17 @@ def main():
     _path = _path + '/arface'
 
     print('INFO: Run MTCNN')
-    # (faces_desc_mtcnn, labels_desc_mtcnn) = detect_faces_mtcnn(
-    #    _path + '/face', _path + '/mtcnn_detect')
+    (faces_desc_mtcnn, labels_desc_mtcnn) = detect_faces_mtcnn(
+        _path + '/face', _path + '/mtcnn_detect')
 
     print('INFO: Divide dataset (FACE)')
     divide_dataset(_path, _path + '/mtcnn_detect', 80, 20)
 
     print('INFO: Run LBP (FACE)')
-    # (faces_desc_lbp, labels_desc_lbp, lbp_model) = run_lbp(_path + '/training')
+    (faces_desc_lbp, labels_desc_lbp, lbp_model) = run_lbp(_path + '/training')
 
     print('INFO: Classifing Images (LBP - FACE)')
-    # classify_lbp(_path, lbp_model)
+    classify_lbp(_path, lbp_model)
 
     print('INFO: Run VGGFACE (FACE)')
     (faces_desc_vgg, labels_desc_vgg, vgg_model) = run_vgg('resnet50', _path)
@@ -455,6 +457,17 @@ def compute_precision_recall(label, score):
         'Average precision score, micro-averaged over all classes: AP={0:0.2f}'
         .format(average_precision["micro"]))
     plt.show()
+
+
+def calcule_f1(predicted, true):
+    f1_value = f1_score(true, predicted, average='macro')
+    print('F1 Score: ', f1_score)
+    return f1_score
+
+
+def making_cmc(values):
+    cmc_dict = {}
+    cmc = CMC(cmc_dict)
 
 
 """ Applying Filters """
