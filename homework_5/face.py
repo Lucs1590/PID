@@ -296,7 +296,9 @@ def classify_lbp(_path, model):
         hist_list.append(hist.reshape(1, -1))
         label_list.append(correct_class)
 
-    compute_precision_recall(hist_list, label_list, model)
+    data = np.array(hist_list).squeeze()
+    score = model.decision_function(hist_list)
+    compute_precision_recall(label_list, score, model)
     return hit, miss
 
 
@@ -419,11 +421,9 @@ def is_match(known_embedding, candidate_embedding, thresh=0.5):
 """ Metrics """
 
 
-def compute_precision_recall(data, label, model):
-    data = np.array(data).squeeze()
+def compute_precision_recall(label, score, model):
     Y = OneHotEncoder().fit_transform(np.array(label).reshape(-1, 1)).toarray()
 
-    score = model.decision_function(data)
     precision = dict()
     recall = dict()
     average_precision = dict()
