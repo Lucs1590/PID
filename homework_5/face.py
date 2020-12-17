@@ -292,11 +292,11 @@ def classify_lbp(_path, model):
         cv2.putText(image, prediction[0], (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
                     1.0, (0, 0, 255), 3)
         cv2.imwrite(_path+'/lbp-detected/'+_file.split(os.path.sep)[-1], image)
-        
+
         hist_list.append(hist.reshape(1, -1))
         label_list.append(correct_class)
 
-    compute_precision_recall(hist_list,label_list, model)
+    compute_precision_recall(hist_list, label_list, model)
     return hit, miss
 
 
@@ -417,6 +417,8 @@ def is_match(known_embedding, candidate_embedding, thresh=0.5):
 
 
 """ Metrics """
+
+
 def compute_precision_recall(data, label, model):
     data = np.array(data).squeeze()
     Y = OneHotEncoder().fit_transform(np.array(label).reshape(-1, 1)).toarray()
@@ -432,9 +434,9 @@ def compute_precision_recall(data, label, model):
         average_precision[i] = average_precision_score(Y[:, i], score[:, i])
 
     precision["micro"], recall["micro"], _ = precision_recall_curve(
-        Y.ravel(), score[:,:Y.shape[1]].ravel())
+        Y.ravel(), score[:, :Y.shape[1]].ravel())
     average_precision["micro"] = average_precision_score(
-        Y, score[:,:Y.shape[1]], average="micro")
+        Y, score[:, :Y.shape[1]], average="micro")
 
     plt.figure()
     plt.step(recall['micro'], precision['micro'], where='post')
