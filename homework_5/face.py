@@ -396,7 +396,7 @@ def classify_vgg(_path, model, labels):
 
         label_list.append(correct_class)
         score_list.append(prediction)
-        predicted_values_list.append(prediction[0])
+        predicted_values_list.append(best_prediction)
 
     calcule_f1(predicted_values_list, label_list)
     compute_precision_recall(label_list, np.array(score_list).squeeze())
@@ -474,8 +474,10 @@ def calcule_f1(predicted, true):
     return f1_value
 
 
-def making_cmc(values):
-    cmc_dict = {}
+def making_cmc(values, keys):
+    cmc_dict = {
+        'Cm-001': values
+    }
     cmc = CMC(cmc_dict)
 
 
