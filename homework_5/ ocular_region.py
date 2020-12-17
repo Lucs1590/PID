@@ -39,13 +39,14 @@ def main():
 
     print('INFO: Standardize Images')
     standardize_images_ocular([_path1 + '/left', _path1 + '/right'],
-                       _path2 + '/default_detect')
+                              _path2 + '/default_detect')
 
     print('INFO: Divide dataset (OCULAR)')
-    divide_dataset(_path2, 80, 20)
+    divide_dataset(_path2, _path2 + '/default_detect',80, 20)
 
     print('INFO: Run LBP (OCULAR)')
-    (oc_regions_desc_lbp, labels_desc_lbp, lbp_model) = run_lbp(_path2 + '/training')
+    (oc_regions_desc_lbp, labels_desc_lbp,
+     lbp_model) = run_lbp(_path2 + '/training')
 
     print('INFO: Classifing Images (LBP - OCULAR)')
     classify_lbp(_path2, lbp_model)
@@ -167,8 +168,8 @@ def plot_poits(_image, detected_face):
 """ Divide Dataset """
 
 
-def divide_dataset(_path, percentage_train=80, percentage_test=20):
-    pictures = glob.glob(path.join(_path + '/default_detect', "*.bmp")).copy()
+def divide_dataset(_path, _path_destination, percentage_train=80, percentage_test=20):
+    pictures = glob.glob(path.join(_path_destination, "*.bmp")).copy()
     training_path = _path+'/training'
     test_path = _path+'/test'
 
