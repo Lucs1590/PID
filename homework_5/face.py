@@ -25,6 +25,9 @@ from keras_vggface.utils import decode_predictions
 from sklearn.preprocessing import OneHotEncoder
 from tensorflow.python.keras.models import Model
 
+""" Metrics import """
+from sklearn.metrics import average_precision_score
+from sklearn.metrics import precision_recall_curve
 """ Main Function """
 
 
@@ -268,6 +271,8 @@ def classify_lbp(_path, model):
     desc = LocalBinaryPatterns(40, 8)
     hit = 0
     miss = 0
+    hist_list = []
+    label_list = []
 
     pictures = glob.glob(path.join(_path+'/test', "*.bmp")).copy()
     pictures = natsorted(pictures)
@@ -277,8 +282,9 @@ def classify_lbp(_path, model):
         gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         hist = desc.describe(gray_img)
         prediction = model.predict(hist.reshape(1, -1))
+        correct_class = ''.join(_file.split(os.path.sep)[-1].split('-')[0:2])
 
-        if prediction[0] == ''.join(_file.split(os.path.sep)[-1].split('-')[0:2]):
+        if prediction[0] == correct_class:
             hit += 1
         else:
             miss += 1
@@ -286,7 +292,11 @@ def classify_lbp(_path, model):
         cv2.putText(image, prediction[0], (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
                     1.0, (0, 0, 255), 3)
         cv2.imwrite(_path+'/lbp-detected/'+_file.split(os.path.sep)[-1], image)
+        
+        hist_list.append(hist.reshape(1, -1))
+        label_list.append(correct_class)
 
+    compute_precision_recall(hist_list,label_list, model)
     return hit, miss
 
 
@@ -404,6 +414,37 @@ def is_match(known_embedding, candidate_embedding, thresh=0.5):
         print('>face is a Match (%.3f <= %.3f)' % (score, thresh))
     else:
         print('>face is NOT a Match (%.3f > %.3f)' % (score, thresh))
+
+
+""" Metrics """
+def compute_precision_recall(data, label, model):
+    data = np.array(data).squeeze()
+    Y = OneHotEncoder().fit_transform(np.array(label).reshape(-1, 1)).toarray()
+
+    score = model.decision_function(data)
+    precision = dict()
+    recall = dict()
+    average_precision = dict()
+
+    for i in range(Y.shape[1]):
+        precision[i], recall[i], _ = precision_recall_curve(
+            Y[:, i], score[:, i])
+        average_precision[i] = average_precision_score(Y[:, i], score[:, i])
+
+    precision["micro"], recall["micro"], _ = precision_recall_curve(
+        Y.ravel(), score[:,:Y.shape[1]].ravel())
+    average_precision["micro"] = average_precision_score(
+        Y, score[:,:Y.shape[1]], average="micro")
+
+    plt.figure()
+    plt.step(recall['micro'], precision['micro'], where='post')
+
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.title(
+        'Average precision score, micro-averaged over all classes: AP={0:0.2f}'
+        .format(average_precision["micro"]))
+    plt.show()
 
 
 """ Applying Filters """
