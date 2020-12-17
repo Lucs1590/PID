@@ -276,6 +276,7 @@ def classify_lbp(_path, model):
     miss = 0
     hist_list = []
     label_list = []
+    predicted_values_list = []
 
     pictures = glob.glob(path.join(_path+'/test', "*.bmp")).copy()
     pictures = natsorted(pictures)
@@ -298,10 +299,14 @@ def classify_lbp(_path, model):
 
         hist_list.append(hist.reshape(1, -1))
         label_list.append(correct_class)
+        predicted_values_list.append(prediction[0])
 
+    calcule_f1(predicted_values_list, label_list)
     data = np.array(hist_list).squeeze()
     score = model.decision_function(data)
     compute_precision_recall(label_list, score)
+
+    print(hit, miss)
     return hit, miss
 
 
@@ -358,6 +363,7 @@ def classify_vgg(_path, model, labels):
     miss = 0
     label_list = []
     score_list = []
+    predicted_values_list = []
 
     pictures = glob.glob(path.join(_path+'/test', "*.bmp")).copy()
     pictures = natsorted(pictures)
@@ -390,9 +396,12 @@ def classify_vgg(_path, model, labels):
 
         label_list.append(correct_class)
         score_list.append(prediction)
+        predicted_values_list.append(prediction[0])
 
+    calcule_f1(predicted_values_list, label_list)
     compute_precision_recall(label_list, np.array(score_list).squeeze())
 
+    print(hit, miss)
     return hit, miss
 
 
