@@ -30,6 +30,9 @@ from sklearn.metrics import average_precision_score
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import f1_score
 from CMC import CMC
+from scipy.optimize import brentq
+from scipy.interpolate import interp1d
+from sklearn.metrics import roc_curve, auc
 """ Main Function """
 
 
@@ -306,6 +309,7 @@ def classify_lbp(_path, model):
     score = model.decision_function(data)
     making_cmc(score, label_list)
     compute_precision_recall(label_list, score)
+    make_roc_curve(label_list, score)
 
     print(hit, miss)
     return hit, miss
@@ -402,6 +406,7 @@ def classify_vgg(_path, model, labels):
     calcule_f1(predicted_values_list, label_list)
     making_cmc(np.array(score_list).squeeze(), label_list)
     compute_precision_recall(label_list, np.array(score_list).squeeze())
+    make_roc_curve(label_list, np.array(score_list).squeeze())
 
     print(hit, miss)
     return hit, miss
@@ -487,11 +492,46 @@ def making_cmc(values, keys):
 
     i = 0
     while i < len(default_array):
-        cmc_dict[keys[default_array[i]]] = values[[default_array[i]]].squeeze().tolist()
+        cmc_dict[keys[default_array[i]]] = values[[
+            default_array[i]]].squeeze().tolist()
         i += 1
 
     cmc = CMC(cmc_dict)
     cmc.plot(title='CMC', xlabel='Rank Score', ylabel='Recognition Rate')
+
+
+def eer(labels, score):
+    fpr, tpr, thresholds = roc_curve(labels, score, pos_label=1)
+
+    eer = brentq(lambda x: 1. - x - interp1d(fpr, tpr)(x), 0., 1.)
+    thresh = interp1d(fpr, thresholds)(eer)
+
+
+def make_roc_curve(label, score):
+    Y = OneHotEncoder().fit_transform(np.array(label).reshape(-1, 1)).toarray()
+
+    fpr = dict()
+    tpr = dict()
+    roc_auc = dict()
+    for i in range(Y.shape[1]):
+        fpr[i], tpr[i], _ = roc_curve(Y[:, i], score[:, i])
+        roc_auc[i] = auc(fpr[i], tpr[i])
+
+    fpr["micro"], tpr["micro"], _ = roc_curve(
+        Y.ravel(), score[:, :Y.shape[1]].ravel())
+    roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
+
+    plt.figure(1)
+    plt.plot(fpr["micro"], tpr["micro"],
+             label='micro-average ROC curve (area = {0:0.2f})'
+             ''.format(roc_auc["micro"]),
+             color='deeppink', linestyle=':', linewidth=4)
+
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC')
+    plt.legend(loc="lower right")
+    plt.show()
 
 
 """ Applying Filters """
