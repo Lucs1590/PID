@@ -500,11 +500,16 @@ def making_cmc(values, keys):
     cmc.plot(title='CMC', xlabel='Rank Score', ylabel='Recognition Rate')
 
 
-def eer(labels, score):
-    fpr, tpr, thresholds = roc_curve(labels, score, pos_label=1)
+def eer(fpr_list, tpr_list):
+    i = 0
+    err_list = []
+    while i < len(fpr_list):
+        err_list.append(
+            brentq(lambda x: 1. - x - interp1d(fpr_list, tpr_list)(x), 0., 1.))
 
-    eer = brentq(lambda x: 1. - x - interp1d(fpr, tpr)(x), 0., 1.)
-    thresh = interp1d(fpr, thresholds)(eer)
+    plt.plot(err_list)
+    plt.ylabel('EER')
+    plt.show()
 
 
 def make_roc_curve(label, score):
@@ -516,6 +521,8 @@ def make_roc_curve(label, score):
     for i in range(Y.shape[1]):
         fpr[i], tpr[i], _ = roc_curve(Y[:, i], score[:, i])
         roc_auc[i] = auc(fpr[i], tpr[i])
+
+    eer(fpr, tpr)
 
     fpr["micro"], tpr["micro"], _ = roc_curve(
         Y.ravel(), score[:, :Y.shape[1]].ravel())
