@@ -400,6 +400,7 @@ def classify_vgg(_path, model, labels):
         predicted_values_list.append(best_prediction)
 
     calcule_f1(predicted_values_list, label_list)
+    making_cmc(np.array(score_list).squeeze(), label_list)
     compute_precision_recall(label_list, np.array(score_list).squeeze())
 
     print(hit, miss)
