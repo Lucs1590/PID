@@ -63,8 +63,8 @@ def main():
     print('INFO: Classifing Images (VGGFACE2 - FACE)')
     classify_vgg(_path, vgg_model, labels_desc_vgg)
 
-    # print('INFO: Compare images')
-    # compare_images(_path, vgg_model)
+    print('INFO: Compare images')
+    compare_images(_path, vgg_model)
 
 
 """ Download Dataset """
@@ -412,12 +412,12 @@ def classify_vgg(_path, model, labels):
     return hit, miss
 
 
-def compare_images(_path, model):
+def compare_images(_path, model, image1=None, image2=None):
     pictures = glob.glob(path.join(_path + '/mtcnn_detect', "*.bmp")).copy()
-    pic1 = random.choice(pictures)
-    print(pic1.split(os.path.sep)[-1])
-    pic2 = random.choice(pictures)
-    print(pic2.split(os.path.sep)[-1])
+    pic1 = image1 if image1 else random.choice(pictures)
+    print(pic1)
+    pic2 = image2 if image2 else random.choice(pictures)
+    print(pic2)
 
     rand_image1 = cv2.cvtColor(cv2.imread(
         pic1), cv2.COLOR_BGR2RGB).astype('float32')
@@ -432,8 +432,6 @@ def compare_images(_path, model):
 
     prediction1 = model.predict(sample1)
     prediction2 = model.predict(sample2)
-
-    is_match(prediction1, prediction2)
 
 
 def is_match(known_embedding, candidate_embedding, thresh=0.5):
@@ -501,15 +499,9 @@ def making_cmc(values, keys):
 
 
 def eer(fpr_list, tpr_list):
-    i = 0
-    err_list = []
-    while i < len(fpr_list):
-        err_list.append(
-            brentq(lambda x: 1. - x - interp1d(fpr_list, tpr_list)(x), 0., 1.))
-
-    plt.plot(err_list)
-    plt.ylabel('EER')
-    plt.show()
+    err = brentq(lambda x: 1. - x - interp1d(fpr_list, tpr_list)(x), 0., 1.)
+    print(err)
+    return err
 
 
 def make_roc_curve(label, score):
@@ -521,8 +513,6 @@ def make_roc_curve(label, score):
     for i in range(Y.shape[1]):
         fpr[i], tpr[i], _ = roc_curve(Y[:, i], score[:, i])
         roc_auc[i] = auc(fpr[i], tpr[i])
-
-    eer(fpr, tpr)
 
     fpr["micro"], tpr["micro"], _ = roc_curve(
         Y.ravel(), score[:, :Y.shape[1]].ravel())
@@ -539,6 +529,7 @@ def make_roc_curve(label, score):
     plt.title('ROC')
     plt.legend(loc="lower right")
     plt.show()
+    eer(fpr["micro"], tpr["micro"])
 
 
 """ Applying Filters """
