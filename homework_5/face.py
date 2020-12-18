@@ -42,8 +42,8 @@ def main():
     _path = _path + '/arface'
 
     print('INFO: Run MTCNN')
-    (faces_desc_mtcnn, labels_desc_mtcnn) = detect_faces_mtcnn(
-        _path + '/face', _path + '/mtcnn_detect')
+    # (faces_desc_mtcnn, labels_desc_mtcnn) = detect_faces_mtcnn(
+    #     _path + '/face', _path + '/mtcnn_detect')
 
     print('INFO: Divide dataset (FACE)')
     divide_dataset(_path, _path + '/mtcnn_detect', 80, 20)
@@ -304,6 +304,7 @@ def classify_lbp(_path, model):
     calcule_f1(predicted_values_list, label_list)
     data = np.array(hist_list).squeeze()
     score = model.decision_function(data)
+    making_cmc(score, label_list)
     compute_precision_recall(label_list, score)
 
     print(hit, miss)
@@ -475,10 +476,21 @@ def calcule_f1(predicted, true):
 
 
 def making_cmc(values, keys):
-    cmc_dict = {
-        'Cm-001': values
-    }
+    i = 0
+    default_array = []
+    cmc_dict = {}
+
+    while i < 5:
+        default_array.append(keys.index(random.choice(keys)))
+        i += 1
+
+    i = 0
+    while i < len(default_array):
+        cmc_dict[keys[default_array[i]]] = values[[default_array[i]]].squeeze().tolist()
+        i += 1
+
     cmc = CMC(cmc_dict)
+    cmc.plot(title='CMC', xlabel='Rank Score', ylabel='Recognition Rate')
 
 
 """ Applying Filters """
