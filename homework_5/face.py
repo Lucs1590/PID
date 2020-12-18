@@ -433,6 +433,8 @@ def compare_images(_path, model, image1=None, image2=None):
     prediction1 = model.predict(sample1)
     prediction2 = model.predict(sample2)
 
+    is_match(prediction1, prediction2)
+
 
 def is_match(known_embedding, candidate_embedding, thresh=0.5):
     score = cosine(known_embedding, candidate_embedding)
