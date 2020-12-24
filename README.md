@@ -11,6 +11,7 @@ Aqui estão os algoritmos desenvolvidos **pelo professor** em aula:
 Aqui estão os algoritmos desenvolvidos por mim:
  - [Manipulação de imagem em MatLab](https://github.com/Lucs1590/PID/tree/master/homework_1);
  - [Equalização de histograma](https://github.com/Lucs1590/PID/tree/master/homework_2);
+ - [Convolução](https://github.com/Lucs1590/PID/tree/master/convolution);
  - [Filtros em MatLab](https://github.com/Lucs1590/PID/tree/master/homework_3);
  - [Transformação de hough](https://github.com/Lucs1590/PID/tree/master/homework_4);
  - [Reconhecimento facial](https://github.com/Lucs1590/PID/tree/master/homework_5).
@@ -31,6 +32,7 @@ Here are the algorithms developed **by the teacher** in class:
 Here are the algorithms developed by me:
  - [Image manipulation in MatLab](https://github.com/Lucs1590/PID/tree/master/homework_1);
  - [Histogram equalization](https://github.com/Lucs1590/PID/tree/master/homework_2);
+ - [Convolution](https://github.com/Lucs1590/PID/tree/master/convolution);
  - [Filters in MatLab](https://github.com/Lucs1590/PID/tree/master/homework_3);
  - [Hough transformation](https://github.com/Lucs1590/PID/tree/master/homework_4);
  - [Facial recognition](https://github.com/Lucs1590/PID/tree/master/homework_5).
