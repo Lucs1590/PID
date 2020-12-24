@@ -108,12 +108,12 @@ mat2gray(F);
 im2bw(F, 0.3);
 
 # T_9
-f = imread('Figuras1/chestxray_gray.jpg');
+f = imread('images/chestxray_gray.jpg');
 size(f)
 [M,N] = size(f);
 whos f;
 imshow(f);
-g = imread('Figuras1/rose_gray.tif');
+g = imread('images/rose_gray.tif');
 imshow(f), figure, imshow(g)
 # At Octave we don't have pixval function, so a alternative is:
 function btn_down (obj, evt)
@@ -135,11 +135,11 @@ endfunction
 # set (gcf, 'WindowButtonDownFcn', @btn_down);
 
 # E_4
-h = imread('Figuras1/bubbles.jpg');
+h = imread('images/bubbles.jpg');
 i = imread('bubbles5.jpg');
 imshow(h), figure, imshow(i)
 
-KH = imfinfo('Figuras1/bubbles.jpg')
+KH = imfinfo('images/bubbles.jpg')
 image_bytes_h = KH.Width*KH.Height*KH.BitDepth/8;
 compress_ratio_h = image_bytes_h/KH.FileSize;
 
@@ -148,11 +148,11 @@ image_bytes_i = KI.Width*KI.Height*KI.BitDepth/8;
 compress_ratio_i = image_bytes_i/KI.FileSize;
 
 # E_5
-f = imread('Figuras1/circuit.jpg');
-imfinfo Figuras1/circuit.jpg
+f = imread('images/circuit.jpg');
+imfinfo images/circuit.jpg
 
 # T_10
-f = imread('Figuras1/rose_gray.tif');
+f = imread('images/rose_gray.tif');
 imshow(f)
 whos f
 

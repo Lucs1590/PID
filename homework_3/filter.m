@@ -1,7 +1,7 @@
 clear all
 close all
 # E_9
-raw_img = imread('Figuras2/Lena_ruido.bmp');
+raw_img = imread('images/Lena_ruido.bmp');
 img_mean_5 = imfilter(raw_img, fspecial("average", 7));
 img_mean_7 = imfilter(raw_img, fspecial("average", 7));
 img_mean_9 = imfilter(raw_img, fspecial("average", 9));
@@ -83,7 +83,7 @@ figure('Name', 'Media da vizinhança k=20')
 imshow(k_img)
 
 # T_4
-raw_img = imread('Figuras2/Moon.tif');
+raw_img = imread('images/Moon.tif');
 w4 = fspecial('laplacian',0);
 w8 = [
 1 1 1;
@@ -98,10 +98,10 @@ figure, imshow(img_lapacian)
 figure, imshow(img_kernel)
 
 # E_10
-img_6 = imread('Figuras2/ferramentas.bmp');
-img_7 = imread('Figuras2/Lena_ruido.bmp');
-img_8 = imread('Figuras2/Moon.tif');
-img_9 = imread('Figuras2/teste.bmp');
+img_6 = imread('images/ferramentas.bmp');
+img_7 = imread('images/Lena_ruido.bmp');
+img_8 = imread('images/Moon.tif');
+img_9 = imread('images/teste.bmp');
 
 sobel_v = fspecial('sobel');
 sobel_h = fspecial('sobel')';
@@ -168,7 +168,7 @@ img_result = img_9 - imfilter(img_9, prewitt_c, 'replicate');
 figure, imshow(img_result)
 
 # T_5
-k = imread('Figuras2/ferramentas.bmp');
+k = imread('images/ferramentas.bmp');
 f = im2double(k);
 f1 = imnoise(f,'salt & pepper', 0.6);
 f2 = imnoise(f,'salt & pepper', 0.6);
@@ -200,7 +200,7 @@ subplot(2,3,5);imshow(f10)
 subplot(2,3,6);imshow(fm)
 
 # E_11
-k = imread('Figuras2/ferramentas.bmp');
+k = imread('images/ferramentas.bmp');
 f = im2double(k);
 f1 = imnoise(f,'salt & pepper', 0.9);
 f2 = imnoise(f,'salt & pepper', 0.8);
@@ -231,7 +231,7 @@ subplot(2,3,4);imshow(f9)
 subplot(2,3,5);imshow(f10)
 subplot(2,3,6);imshow(fm)
 
-k = imread('Figuras2/ferramentas.bmp');
+k = imread('images/ferramentas.bmp');
 f = im2double(k);
 f1 = imnoise(f,'gaussian', 0.9);
 f2 = imnoise(f,'gaussian', 0.8);

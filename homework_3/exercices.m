@@ -2,8 +2,8 @@ clear all
 close all
 
 # T_1
-img = imread('Figuras2/mammogram.bmp');
-imfinfo Figuras2/mammogram.bmp;
+img = imread('images/mammogram.bmp');
+imfinfo images/mammogram.bmp;
 figure(1)
 subplot(1,2,1);
 imshow(img);
@@ -66,7 +66,7 @@ g3 = imadjust(img, [ ], [ ], 2); # If gamma is greater than 1, then imadjust wei
 imshow(g3)
 
 # T_2 e E_4
-img2 = imread('Figuras2/polem.bmp');
+img2 = imread('images/polem.bmp');
 figure(8)
 imshow(img2)
 

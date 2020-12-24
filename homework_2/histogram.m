@@ -14,7 +14,7 @@ close all
 # 4) Compare os resultados
 
 # EXERCICIO 1
-image = imread('lena.jpg');
+image = imread('images/lena.jpg');
 raw_hist = imhist(image);
 
 figure(1)

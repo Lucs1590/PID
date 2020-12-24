@@ -1,7 +1,7 @@
 clear all
 # T_3
-img1 = imread('Figuras2/Image2.bmp');
-img2 = imread('Figuras2/Image3.bmp');
+img1 = imread('images/Image2.bmp');
+img2 = imread('images/Image3.bmp');
 img3 = imabsdiff(img2,img1);
 img4 = imcomplement(img3);
 figure('Name', 'Imagem Original'),imshow(img1)
@@ -20,7 +20,7 @@ img6 = img1 - img2;
 figure('Name', 'Subtração A e B Comum'),imshow(img6)
 
 # E_7
-img_polem = imread('Figuras2/polem.bmp');
+img_polem = imread('images/polem.bmp');
 figure('Name', 'Imagem Original')
 imshow(img_polem)
 img_polem_clara = img_polem + 128;
@@ -34,7 +34,7 @@ imhist(img_p_eq)
 figure('Name', 'Histograma da Imagem Clara')
 imhist(img_pc_eq)
 
-img_polem = imread('Figuras2/polem.bmp');
+img_polem = imread('images/polem.bmp');
 figure('Name', 'Imagem Original')
 imshow(img_polem)
 img_polem_clara = img_polem + 200;
@@ -54,7 +54,7 @@ figure('Name', 'Imagem Clara Equalizada')
 imshow(img_p_eq)
 
 # E_8
-raw_img = imread('Figuras2/ferramentas.bmp');
+raw_img = imread('images/ferramentas.bmp');
 img_bin_1 = im2bw(raw_img,0.2);
 img_bin_2 = im2bw(raw_img,0.3);
 img_bin_3 = im2bw(raw_img,0.4);
@@ -82,7 +82,7 @@ imhist(img_bin_4)
 figure('Name', 'Histograma Bin 60%')
 imhist(img_bin_5)
 
-raw_img = imread('Figuras2/polem.bmp');
+raw_img = imread('images/polem.bmp');
 img_bin_6 = graythresh(raw_img)
 figure('Name', 'Imagem com Graythresh')
 imshow(img_bin_6)
