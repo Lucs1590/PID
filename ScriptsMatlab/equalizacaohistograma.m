@@ -2,7 +2,7 @@ clear all
 close(gcf)
 
 
-I = imread('/home/brito/Documentos/Mestrado/PDI/codigos/homework_2/lena.jpg');
+I = imread('pirate.png');
 
 J = histeq(I);
 
