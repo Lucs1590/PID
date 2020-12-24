@@ -2,7 +2,7 @@ scipy==1.4.1
 numpy==1.13.3
 matplotlib==2.1.1
 opencv_contrib_python==4.3.0.36
-tensorflow==2.2.0
+tensorflow==2.4.0
 gdown==3.12.0
 keras_vggface==0.6
 mtcnn==0.1.0
