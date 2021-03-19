@@ -7,6 +7,6 @@ gdown==3.12.0
 keras_vggface==0.6
 mtcnn==0.1.0
 natsort==7.1.0
-Pillow==8.0.1
+Pillow==8.1.1
 scikit_learn==0.23.2
 skimage
