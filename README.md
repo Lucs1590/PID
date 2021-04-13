@@ -1,5 +1,4 @@
 # Processamento de Imagem Digital
-## (Processamento Digital de Imagens)
 Algoritmos da aula de Processamento de Imagens Digitais orientadas pelo [Prof. Dr. Aparecido Nilceu Marana](https://github.com/nilceumarana), na instituição UNESP - Campus Bauru.
 
 Aqui estão os algoritmos desenvolvidos **pelo professor** em aula:
@@ -20,7 +19,6 @@ Aqui estão os algoritmos desenvolvidos por mim:
 
 
 # Digital Image Processing
-## (Digital Image Processing)
 Algorithms from the Digital Image Processing class guided by [Prof. Dr. Aparecido Nilceu Marana](https://github.com/nilceumarana), at UNESP - Campus Bauru.
 
 Here are the algorithms developed **by the teacher** in class:
