@@ -15,6 +15,8 @@ Aqui estão os algoritmos desenvolvidos por mim:
  - [Transformação de hough](https://github.com/Lucs1590/PID/tree/master/homework_4);
  - [Reconhecimento facial](https://github.com/Lucs1590/PID/tree/master/homework_5).
 
+
+**OBS.: Esse repositório está arquivado, sendo assim, será utilizado apenas para consultas.**
 ---
 
 
@@ -34,3 +36,5 @@ Here are the algorithms developed by me:
  - [Filters in MatLab](https://github.com/Lucs1590/PID/tree/master/homework_3);
  - [Hough transformation](https://github.com/Lucs1590/PID/tree/master/homework_4);
  - [Facial recognition](https://github.com/Lucs1590/PID/tree/master/homework_5).
+
+**NOTE: This repository is archived, so it will only be used for consultations.**
