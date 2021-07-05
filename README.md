@@ -17,6 +17,7 @@ Aqui estão os algoritmos desenvolvidos por mim:
 
 
 **OBS.: Esse repositório está arquivado, sendo assim, será utilizado apenas para consultas.**
+
 ---
 
 
